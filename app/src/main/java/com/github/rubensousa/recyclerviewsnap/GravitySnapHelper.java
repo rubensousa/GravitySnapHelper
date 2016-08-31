@@ -1,6 +1,8 @@
 package com.github.rubensousa.recyclerviewsnap;
 
+import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.OrientationHelper;
@@ -14,7 +16,9 @@ public class GravitySnapHelper extends LinearSnapHelper {
     private OrientationHelper mVerticalHelper;
     private OrientationHelper mHorizontalHelper;
     private int mGravity;
+    private boolean mIsRtl;
 
+    @SuppressLint("RtlHardcoded")
     public GravitySnapHelper(int gravity) {
         mGravity = gravity;
         if (mGravity == Gravity.LEFT) {
@@ -22,6 +26,15 @@ public class GravitySnapHelper extends LinearSnapHelper {
         } else if (mGravity == Gravity.RIGHT) {
             mGravity = Gravity.END;
         }
+    }
+
+    @Override
+    public void attachToRecyclerView(@Nullable RecyclerView recyclerView)
+            throws IllegalStateException {
+        if (recyclerView != null) {
+            mIsRtl = recyclerView.getContext().getResources().getBoolean(R.bool.is_rtl);
+        }
+        super.attachToRecyclerView(recyclerView);
     }
 
     @Override
@@ -70,10 +83,16 @@ public class GravitySnapHelper extends LinearSnapHelper {
     }
 
     private int distanceToStart(View targetView, OrientationHelper helper) {
+        if (mIsRtl) {
+            return distanceToEnd(targetView, helper);
+        }
         return helper.getDecoratedStart(targetView) - helper.getStartAfterPadding();
     }
 
     private int distanceToEnd(View targetView, OrientationHelper helper) {
+        if (mIsRtl) {
+            return helper.getDecoratedStart(targetView) - helper.getStartAfterPadding();
+        }
         return helper.getDecoratedEnd(targetView) - helper.getEndAfterPadding();
     }
 
@@ -89,7 +108,8 @@ public class GravitySnapHelper extends LinearSnapHelper {
 
             View child = layoutManager.findViewByPosition(firstChild);
 
-            if (helper.getDecoratedEnd(child) >= helper.getDecoratedMeasurement(child) / 2) {
+            if (helper.getDecoratedEnd(child) >= helper.getDecoratedMeasurement(child) / 2
+                    && helper.getDecoratedEnd(child) > 0) {
                 return child;
             } else {
                 if (((LinearLayoutManager) layoutManager).findLastCompletelyVisibleItemPosition()

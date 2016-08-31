@@ -2,7 +2,8 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -10,103 +11,25 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
 
-        <LinearLayout
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:paddingTop="@dimen/activity_vertical_margin">
+            android:layout_height="wrap_content" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                android:layout_marginStart="@dimen/activity_horizontal_margin"
-                android:text="Snap center"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recyclerView"
-                android:layout_marginTop="8dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clipToPadding="false"
-                android:nestedScrollingEnabled="false"
-                android:padding="4dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                android:layout_marginStart="@dimen/activity_horizontal_margin"
-                android:layout_marginTop="16dp"
-                android:text="Snap start"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recyclerViewStart"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_below="@id/recyclerView"
-                android:clipToPadding="false"
-                android:nestedScrollingEnabled="false"
-                android:padding="4dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                android:layout_marginStart="@dimen/activity_horizontal_margin"
-                android:layout_marginTop="16dp"
-                android:text="Snap end"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recyclerViewEnd"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_below="@id/recyclerView"
-                android:clipToPadding="false"
-                android:nestedScrollingEnabled="false"
-                android:padding="4dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                android:layout_marginStart="@dimen/activity_horizontal_margin"
-                android:layout_marginTop="16dp"
-                android:text="Snap top"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recyclerViewTop"
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:layout_below="@id/recyclerView"
-                android:layout_marginTop="8dp"
-                android:clipToPadding="false"
-                android:padding="4dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                android:layout_marginStart="@dimen/activity_horizontal_margin"
-                android:layout_marginTop="16dp"
-                android:text="Snap bottom"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recyclerViewBottom"
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:layout_below="@id/recyclerView"
-                android:layout_marginTop="8dp"
-                android:clipToPadding="false"
-                android:padding="4dp" />
-
-        </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:title="@string/app_name" />
+
+    </android.support.design.widget.AppBarLayout>
+
 </android.support.design.widget.CoordinatorLayout>

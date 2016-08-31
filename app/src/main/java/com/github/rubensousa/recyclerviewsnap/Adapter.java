@@ -7,20 +7,16 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
-    private ArrayList<App> mApps;
+    private List<App> mApps;
     private boolean mHorizontal;
 
-    public Adapter(boolean horizontal) {
+    public Adapter(boolean horizontal, List<App> apps) {
         mHorizontal = horizontal;
-        mApps = new ArrayList<>();
-    }
-
-    public void addApp(App app) {
-        mApps.add(app);
+        mApps = apps;
     }
 
     @Override

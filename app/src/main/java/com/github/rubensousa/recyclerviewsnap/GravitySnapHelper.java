@@ -43,7 +43,7 @@ public class GravitySnapHelper extends LinearSnapHelper {
         int[] out = new int[2];
 
         if (layoutManager.canScrollHorizontally()) {
-            if (mGravity == Gravity.START) {
+            if (isStartGravity(layoutManager)) {
                 out[0] = distanceToStart(targetView, getHorizontalHelper(layoutManager));
             } else { // END
                 out[0] = distanceToEnd(targetView, getHorizontalHelper(layoutManager));
@@ -53,7 +53,7 @@ public class GravitySnapHelper extends LinearSnapHelper {
         }
 
         if (layoutManager.canScrollVertically()) {
-            if (mGravity == Gravity.TOP) {
+            if (isStartGravity(layoutManager)) {
                 out[1] = distanceToStart(targetView, getVerticalHelper(layoutManager));
             } else { // BOTTOM
                 out[1] = distanceToEnd(targetView, getVerticalHelper(layoutManager));
@@ -67,19 +67,29 @@ public class GravitySnapHelper extends LinearSnapHelper {
     @Override
     public View findSnapView(RecyclerView.LayoutManager layoutManager) {
         if (layoutManager instanceof LinearLayoutManager) {
-            switch (mGravity) {
-                case Gravity.START:
-                    return findStartView(layoutManager, getHorizontalHelper(layoutManager));
-                case Gravity.TOP:
-                    return findStartView(layoutManager, getVerticalHelper(layoutManager));
-                case Gravity.END:
-                    return findEndView(layoutManager, getHorizontalHelper(layoutManager));
-                case Gravity.BOTTOM:
-                    return findEndView(layoutManager, getVerticalHelper(layoutManager));
+            OrientationHelper helper = layoutManager.canScrollHorizontally()
+                    ? getHorizontalHelper(layoutManager) : getVerticalHelper(layoutManager);
+
+            if (isStartGravity(layoutManager)) {
+                return findStartView(layoutManager, helper);
+            } else {
+                return findEndView(layoutManager, helper);
             }
         }
 
         return super.findSnapView(layoutManager);
+    }
+
+    private boolean isStartGravity(RecyclerView.LayoutManager layoutManager) {
+        int firstCompletelyChild = ((LinearLayoutManager) layoutManager)
+                .findFirstCompletelyVisibleItemPosition();
+        int lastCompletelyChild = ((LinearLayoutManager) layoutManager)
+                .findLastCompletelyVisibleItemPosition();
+
+        return (mGravity == Gravity.START || mGravity == Gravity.TOP)
+                    && lastCompletelyChild != layoutManager.getItemCount() - 1
+                || (mGravity == Gravity.END || mGravity == Gravity.BOTTOM)
+                    && firstCompletelyChild == 0;
     }
 
     private int distanceToStart(View targetView, OrientationHelper helper) {

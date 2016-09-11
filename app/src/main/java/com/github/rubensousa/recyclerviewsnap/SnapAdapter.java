@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.github.rubensousa.gravitysnaphelper.GravitySnapHelper;
+
 import java.util.ArrayList;
 
 public class SnapAdapter extends RecyclerView.Adapter<SnapAdapter.ViewHolder> {

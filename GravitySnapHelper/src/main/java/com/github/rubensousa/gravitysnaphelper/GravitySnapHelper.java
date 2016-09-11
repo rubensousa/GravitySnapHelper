@@ -1,4 +1,4 @@
-package com.github.rubensousa.recyclerviewsnap;
+package com.github.rubensousa.gravitysnaphelper;
 
 import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;

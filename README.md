@@ -32,6 +32,7 @@ startRecyclerView.setLayoutManager(new LinearLayoutManager(this,
 SnapHelper snapHelperStart = new GravitySnapHelper(Gravity.START);
 snapHelperStart.attachToRecyclerView(startRecyclerView);
 ```
+**NOTICE:** There's a serious issue with horizontal snapping in RTL layouts (see https://github.com/rubensousa/RecyclerViewSnap/issues/1). If you currently support RTL, consider waiting for a next release.
 
 ### Snapping top with GravitySnapHelper:
 

@@ -20,7 +20,6 @@ bintray {
         publish = true
         publicDownloadNumbers = true
         version {
-            desc = POM_DESCRIPTION
             gpg {
                 sign = true
                 passphrase = properties.getProperty("bintray.gpg.password")

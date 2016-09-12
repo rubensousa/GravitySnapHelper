@@ -1,1 +1,1 @@
-include ':app', ':GravitySnapHelper'
+include ':app', ':gravitysnaphelper'

@@ -36,11 +36,6 @@ public class GravitySnapHelper extends LinearSnapHelper {
         if (recyclerView != null) {
             mIsRtl = recyclerView.getContext().getResources().getBoolean(R.bool.is_rtl);
         }
-        if (mGravity == Gravity.START) {
-            mGravity = mIsRtl ? Gravity.END : Gravity.START;
-        } else if (mGravity == Gravity.END) {
-            mGravity = mIsRtl ? Gravity.START : Gravity.END;
-        }
         super.attachToRecyclerView(recyclerView);
     }
 
@@ -51,9 +46,9 @@ public class GravitySnapHelper extends LinearSnapHelper {
 
         if (layoutManager.canScrollHorizontally()) {
             if (mGravity == Gravity.START) {
-                out[0] = distanceToStart(targetView, getHorizontalHelper(layoutManager));
+                out[0] = distanceToStart(targetView, getHorizontalHelper(layoutManager), false);
             } else { // END
-                out[0] = distanceToEnd(targetView, getHorizontalHelper(layoutManager));
+                out[0] = distanceToEnd(targetView, getHorizontalHelper(layoutManager), false);
             }
         } else {
             out[0] = 0;
@@ -61,9 +56,9 @@ public class GravitySnapHelper extends LinearSnapHelper {
 
         if (layoutManager.canScrollVertically()) {
             if (mGravity == Gravity.TOP) {
-                out[1] = distanceToStart(targetView, getVerticalHelper(layoutManager));
+                out[1] = distanceToStart(targetView, getVerticalHelper(layoutManager), false);
             } else { // BOTTOM
-                out[1] = distanceToEnd(targetView, getVerticalHelper(layoutManager));
+                out[1] = distanceToEnd(targetView, getVerticalHelper(layoutManager), false);
             }
         } else {
             out[1] = 0;
@@ -89,20 +84,27 @@ public class GravitySnapHelper extends LinearSnapHelper {
         return super.findSnapView(layoutManager);
     }
 
-    private int distanceToStart(View targetView, OrientationHelper helper) {
-        if (mIsRtl) {
-            return distanceToEnd(targetView, helper);
+    private int distanceToStart(View targetView, OrientationHelper helper, boolean fromEnd) {
+        if (mIsRtl && !fromEnd) {
+            return distanceToEnd(targetView, helper, true);
         }
         return helper.getDecoratedStart(targetView) - helper.getStartAfterPadding();
     }
 
-    private int distanceToEnd(View targetView, OrientationHelper helper) {
-        if (mIsRtl) {
-            return helper.getDecoratedStart(targetView) - helper.getStartAfterPadding();
+    private int distanceToEnd(View targetView, OrientationHelper helper, boolean fromStart) {
+        if (mIsRtl && !fromStart) {
+            return distanceToStart(targetView, helper, true);
         }
         return helper.getDecoratedEnd(targetView) - helper.getEndAfterPadding();
     }
 
+    /**
+     * Returns the first view that we should snap to.
+     *
+     * @param layoutManager the recyclerview's layout manager
+     * @param helper        orientation helper to calculate view sizes
+     * @return the first view in the LayoutManager to snap to
+     */
     private View findStartView(RecyclerView.LayoutManager layoutManager,
                                OrientationHelper helper) {
 
@@ -115,15 +117,38 @@ public class GravitySnapHelper extends LinearSnapHelper {
 
             View child = layoutManager.findViewByPosition(firstChild);
 
-            if (helper.getDecoratedEnd(child) >= helper.getDecoratedMeasurement(child) / 2
-                    && helper.getDecoratedEnd(child) > 0) {
+
+            float visibleWidth;
+
+            // We should return the child if it's visible width
+            // is greater than 0.5 of it's total width.
+            // In a RTL configuration, we need to check the start point and in LTR the end point
+            if (mIsRtl) {
+                visibleWidth = (float) (helper.getTotalSpace() - helper.getDecoratedStart(child))
+                        / helper.getDecoratedMeasurement(child);
+            } else {
+                visibleWidth = (float) Math.abs(helper.getDecoratedEnd(child))
+                        / helper.getDecoratedMeasurement(child);
+            }
+
+
+            if (visibleWidth > 0.5f) {
                 return child;
             } else {
-                if (((LinearLayoutManager) layoutManager).findLastCompletelyVisibleItemPosition()
-                        == layoutManager.getItemCount() - 1) {
+                // If we're at the end of the list, we shouldn't snap
+                // to avoid having the last item not completely visible.
+                boolean startOfList = mIsRtl ? ((LinearLayoutManager) layoutManager)
+                        .findFirstCompletelyVisibleItemPosition() == 0
+                        : ((LinearLayoutManager) layoutManager).findLastCompletelyVisibleItemPosition()
+                        == layoutManager.getItemCount() - 1;
+
+                if (startOfList) {
                     return null;
                 } else {
+                    // If the child wasn't returned, we need to return
+                    // the next view close to the start.
                     return layoutManager.findViewByPosition(firstChild + 1);
+
                 }
             }
         }

@@ -20,12 +20,14 @@ public class GravitySnapHelper extends LinearSnapHelper {
 
     @SuppressLint("RtlHardcoded")
     public GravitySnapHelper(int gravity) {
-        mGravity = gravity;
-        if (mGravity == Gravity.LEFT) {
-            mGravity = Gravity.START;
-        } else if (mGravity == Gravity.RIGHT) {
-            mGravity = Gravity.END;
+        if (gravity != Gravity.LEFT && gravity != Gravity.RIGHT
+                && gravity != Gravity.START && gravity != Gravity.END
+                && gravity != Gravity.BOTTOM && gravity != Gravity.TOP) {
+            throw new IllegalArgumentException("Invalid gravity value. Use LEFT | RIGHT | START " +
+                    "| END | BOTTOM | TOP constants");
         }
+
+        mGravity = gravity;
     }
 
     @Override
@@ -33,6 +35,11 @@ public class GravitySnapHelper extends LinearSnapHelper {
             throws IllegalStateException {
         if (recyclerView != null) {
             mIsRtl = recyclerView.getContext().getResources().getBoolean(R.bool.is_rtl);
+        }
+        if (mGravity == Gravity.START) {
+            mGravity = mIsRtl ? Gravity.END : Gravity.START;
+        } else if (mGravity == Gravity.END) {
+            mGravity = mIsRtl ? Gravity.START : Gravity.END;
         }
         super.attachToRecyclerView(recyclerView);
     }

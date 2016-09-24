@@ -127,7 +127,7 @@ public class GravitySnapHelper extends LinearSnapHelper {
                 visibleWidth = (float) (helper.getTotalSpace() - helper.getDecoratedStart(child))
                         / helper.getDecoratedMeasurement(child);
             } else {
-                visibleWidth = (float) Math.abs(helper.getDecoratedEnd(child))
+                visibleWidth = (float) helper.getDecoratedEnd(child)
                         / helper.getDecoratedMeasurement(child);
             }
 
@@ -137,12 +137,12 @@ public class GravitySnapHelper extends LinearSnapHelper {
             } else {
                 // If we're at the end of the list, we shouldn't snap
                 // to avoid having the last item not completely visible.
-                boolean startOfList = mIsRtl ? ((LinearLayoutManager) layoutManager)
+                boolean endOfList = mIsRtl ? ((LinearLayoutManager) layoutManager)
                         .findFirstCompletelyVisibleItemPosition() == 0
                         : ((LinearLayoutManager) layoutManager).findLastCompletelyVisibleItemPosition()
                         == layoutManager.getItemCount() - 1;
 
-                if (startOfList) {
+                if (endOfList) {
                     return null;
                 } else {
                     // If the child wasn't returned, we need to return
@@ -168,14 +168,30 @@ public class GravitySnapHelper extends LinearSnapHelper {
 
             View child = layoutManager.findViewByPosition(lastChild);
 
-            if (helper.getDecoratedStart(child) + helper.getDecoratedMeasurement(child) / 2
-                    <= helper.getTotalSpace()) {
+            float visibleWidth;
+
+            if (mIsRtl) {
+                visibleWidth = (float) helper.getDecoratedEnd(child)
+                        / helper.getDecoratedMeasurement(child);
+            } else {
+                visibleWidth = (float) (helper.getTotalSpace() - helper.getDecoratedStart(child))
+                        / helper.getDecoratedMeasurement(child);
+            }
+
+            if (visibleWidth > 0.5f) {
                 return child;
             } else {
-                if (((LinearLayoutManager) layoutManager).findFirstCompletelyVisibleItemPosition()
-                        == 0) {
+                // If we're at the start of the list, we shouldn't snap
+                // to avoid having the first item not completely visible.
+                boolean startOfList = mIsRtl ? ((LinearLayoutManager) layoutManager)
+                        .findLastCompletelyVisibleItemPosition() == layoutManager.getItemCount() - 1
+                        : ((LinearLayoutManager) layoutManager).findFirstCompletelyVisibleItemPosition()
+                        == 0;
+
+                if (startOfList) {
                     return null;
                 } else {
+                    // If the child wasn't returned, we need to return the previous view
                     return layoutManager.findViewByPosition(lastChild - 1);
                 }
             }

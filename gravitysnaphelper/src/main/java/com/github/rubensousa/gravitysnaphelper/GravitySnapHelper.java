@@ -16,14 +16,20 @@ public class GravitySnapHelper extends LinearSnapHelper {
     private OrientationHelper mHorizontalHelper;
     private int mGravity;
     private boolean mIsRtlHorizontal;
+    private boolean mSnapLastItemEnabled;
 
     public GravitySnapHelper(int gravity) {
+        this(gravity, false);
+    }
+
+    public GravitySnapHelper(int gravity, boolean enableSnapLastItem) {
         if (gravity != Gravity.START && gravity != Gravity.END
                 && gravity != Gravity.BOTTOM && gravity != Gravity.TOP) {
             throw new IllegalArgumentException("Invalid gravity value. Use START " +
                     "| END | BOTTOM | TOP constants");
         }
 
+        mSnapLastItemEnabled = enableSnapLastItem;
         mGravity = gravity;
     }
 
@@ -80,6 +86,10 @@ public class GravitySnapHelper extends LinearSnapHelper {
         }
 
         return super.findSnapView(layoutManager);
+    }
+
+    public void enableLastItemSnap(boolean snap) {
+        mSnapLastItemEnabled = snap;
     }
 
     private int distanceToStart(View targetView, OrientationHelper helper, boolean fromEnd) {
@@ -140,13 +150,16 @@ public class GravitySnapHelper extends LinearSnapHelper {
                         : ((LinearLayoutManager) layoutManager).findLastCompletelyVisibleItemPosition()
                         == layoutManager.getItemCount() - 1;
 
+                if (mSnapLastItemEnabled && endOfList) {
+                    return child;
+                }
+
                 if (endOfList) {
                     return null;
                 } else {
                     // If the child wasn't returned, we need to return
                     // the next view close to the start.
                     return layoutManager.findViewByPosition(firstChild + 1);
-
                 }
             }
         }
@@ -185,6 +198,10 @@ public class GravitySnapHelper extends LinearSnapHelper {
                         .findLastCompletelyVisibleItemPosition() == layoutManager.getItemCount() - 1
                         : ((LinearLayoutManager) layoutManager).findFirstCompletelyVisibleItemPosition()
                         == 0;
+
+                if (mSnapLastItemEnabled && startOfList) {
+                    return child;
+                }
 
                 if (startOfList) {
                     return null;

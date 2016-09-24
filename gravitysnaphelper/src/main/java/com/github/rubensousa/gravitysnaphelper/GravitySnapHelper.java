@@ -1,6 +1,5 @@
 package com.github.rubensousa.gravitysnaphelper;
 
-import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,14 +15,12 @@ public class GravitySnapHelper extends LinearSnapHelper {
     private OrientationHelper mVerticalHelper;
     private OrientationHelper mHorizontalHelper;
     private int mGravity;
-    private boolean mIsRtl;
+    private boolean mIsRtlHorizontal;
 
-    @SuppressLint("RtlHardcoded")
     public GravitySnapHelper(int gravity) {
-        if (gravity != Gravity.LEFT && gravity != Gravity.RIGHT
-                && gravity != Gravity.START && gravity != Gravity.END
+        if (gravity != Gravity.START && gravity != Gravity.END
                 && gravity != Gravity.BOTTOM && gravity != Gravity.TOP) {
-            throw new IllegalArgumentException("Invalid gravity value. Use LEFT | RIGHT | START " +
+            throw new IllegalArgumentException("Invalid gravity value. Use START " +
                     "| END | BOTTOM | TOP constants");
         }
 
@@ -33,8 +30,9 @@ public class GravitySnapHelper extends LinearSnapHelper {
     @Override
     public void attachToRecyclerView(@Nullable RecyclerView recyclerView)
             throws IllegalStateException {
-        if (recyclerView != null) {
-            mIsRtl = recyclerView.getContext().getResources().getBoolean(R.bool.is_rtl);
+        if (recyclerView != null && (mGravity == Gravity.START || mGravity == Gravity.END)) {
+            mIsRtlHorizontal
+                    = recyclerView.getContext().getResources().getBoolean(R.bool.is_rtl);
         }
         super.attachToRecyclerView(recyclerView);
     }
@@ -72,10 +70,10 @@ public class GravitySnapHelper extends LinearSnapHelper {
             switch (mGravity) {
                 case Gravity.START:
                     return findStartView(layoutManager, getHorizontalHelper(layoutManager));
-                case Gravity.TOP:
-                    return findStartView(layoutManager, getVerticalHelper(layoutManager));
                 case Gravity.END:
                     return findEndView(layoutManager, getHorizontalHelper(layoutManager));
+                case Gravity.TOP:
+                    return findStartView(layoutManager, getVerticalHelper(layoutManager));
                 case Gravity.BOTTOM:
                     return findEndView(layoutManager, getVerticalHelper(layoutManager));
             }
@@ -85,14 +83,14 @@ public class GravitySnapHelper extends LinearSnapHelper {
     }
 
     private int distanceToStart(View targetView, OrientationHelper helper, boolean fromEnd) {
-        if (mIsRtl && !fromEnd) {
+        if (mIsRtlHorizontal && !fromEnd) {
             return distanceToEnd(targetView, helper, true);
         }
         return helper.getDecoratedStart(targetView) - helper.getStartAfterPadding();
     }
 
     private int distanceToEnd(View targetView, OrientationHelper helper, boolean fromStart) {
-        if (mIsRtl && !fromStart) {
+        if (mIsRtlHorizontal && !fromStart) {
             return distanceToStart(targetView, helper, true);
         }
         return helper.getDecoratedEnd(targetView) - helper.getEndAfterPadding();
@@ -123,7 +121,7 @@ public class GravitySnapHelper extends LinearSnapHelper {
             // We should return the child if it's visible width
             // is greater than 0.5 of it's total width.
             // In a RTL configuration, we need to check the start point and in LTR the end point
-            if (mIsRtl) {
+            if (mIsRtlHorizontal) {
                 visibleWidth = (float) (helper.getTotalSpace() - helper.getDecoratedStart(child))
                         / helper.getDecoratedMeasurement(child);
             } else {
@@ -137,7 +135,7 @@ public class GravitySnapHelper extends LinearSnapHelper {
             } else {
                 // If we're at the end of the list, we shouldn't snap
                 // to avoid having the last item not completely visible.
-                boolean endOfList = mIsRtl ? ((LinearLayoutManager) layoutManager)
+                boolean endOfList = mIsRtlHorizontal ? ((LinearLayoutManager) layoutManager)
                         .findFirstCompletelyVisibleItemPosition() == 0
                         : ((LinearLayoutManager) layoutManager).findLastCompletelyVisibleItemPosition()
                         == layoutManager.getItemCount() - 1;
@@ -170,7 +168,7 @@ public class GravitySnapHelper extends LinearSnapHelper {
 
             float visibleWidth;
 
-            if (mIsRtl) {
+            if (mIsRtlHorizontal) {
                 visibleWidth = (float) helper.getDecoratedEnd(child)
                         / helper.getDecoratedMeasurement(child);
             } else {
@@ -183,7 +181,7 @@ public class GravitySnapHelper extends LinearSnapHelper {
             } else {
                 // If we're at the start of the list, we shouldn't snap
                 // to avoid having the first item not completely visible.
-                boolean startOfList = mIsRtl ? ((LinearLayoutManager) layoutManager)
+                boolean startOfList = mIsRtlHorizontal ? ((LinearLayoutManager) layoutManager)
                         .findLastCompletelyVisibleItemPosition() == layoutManager.getItemCount() - 1
                         : ((LinearLayoutManager) layoutManager).findFirstCompletelyVisibleItemPosition()
                         == 0;

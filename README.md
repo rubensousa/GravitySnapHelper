@@ -8,6 +8,12 @@ RecyclerView snapping example with SnapHelper
 
 If you need snapping support to start, top, end or bottom, use [GravitySnapHelper](https://github.com/rubensousa/RecyclerViewSnap/blob/master/app/src/main/java/com/github/rubensousa/recyclerviewsnap/GravitySnapHelper.java).
 
+Add this to your build.gradle:
+
+```groovy
+compile 'com.github.rubensousa:gravitysnaphelper:0.1'
+```
+
 Otherwise, center snapping is done with LinearSnapHelper (part of the recyclerview-v7 package).
 
 ### Snapping center:
@@ -26,6 +32,7 @@ startRecyclerView.setLayoutManager(new LinearLayoutManager(this,
 SnapHelper snapHelperStart = new GravitySnapHelper(Gravity.START);
 snapHelperStart.attachToRecyclerView(startRecyclerView);
 ```
+**NOTICE:** There's a serious issue with horizontal snapping in RTL layouts (see https://github.com/rubensousa/RecyclerViewSnap/issues/1). If you currently support RTL, consider waiting for a next release.
 
 ### Snapping top with GravitySnapHelper:
 

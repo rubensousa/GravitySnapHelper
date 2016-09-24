@@ -145,9 +145,8 @@ public class GravitySnapHelper extends LinearSnapHelper {
             } else {
                 // If we're at the end of the list, we shouldn't snap
                 // to avoid having the last item not completely visible.
-                boolean endOfList = mIsRtlHorizontal ? ((LinearLayoutManager) layoutManager)
-                        .findFirstCompletelyVisibleItemPosition() == 0
-                        : ((LinearLayoutManager) layoutManager).findLastCompletelyVisibleItemPosition()
+                boolean endOfList = ((LinearLayoutManager) layoutManager)
+                        .findLastCompletelyVisibleItemPosition()
                         == layoutManager.getItemCount() - 1;
 
                 if (mSnapLastItemEnabled && endOfList) {
@@ -194,10 +193,8 @@ public class GravitySnapHelper extends LinearSnapHelper {
             } else {
                 // If we're at the start of the list, we shouldn't snap
                 // to avoid having the first item not completely visible.
-                boolean startOfList = mIsRtlHorizontal ? ((LinearLayoutManager) layoutManager)
-                        .findLastCompletelyVisibleItemPosition() == layoutManager.getItemCount() - 1
-                        : ((LinearLayoutManager) layoutManager).findFirstCompletelyVisibleItemPosition()
-                        == 0;
+                boolean startOfList =((LinearLayoutManager) layoutManager)
+                        .findFirstCompletelyVisibleItemPosition() == 0;
 
                 if (mSnapLastItemEnabled && startOfList) {
                     return child;

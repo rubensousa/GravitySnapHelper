@@ -96,14 +96,33 @@ public class GravitySnapHelper extends LinearSnapHelper {
         if (mIsRtlHorizontal && !fromEnd) {
             return distanceToEnd(targetView, helper, true);
         }
-        return helper.getDecoratedStart(targetView) - helper.getStartAfterPadding();
+
+        int distance = helper.getDecoratedStart(targetView) - helper.getStartAfterPadding();
+
+        // Since the wrong targetView gets passed sometimes, we need to check if the distance
+        // to snap is greater than the view's width, but smaller than 150% since this also
+        // gets called when there's a fling with high velocity.
+        if (Math.abs(distance) > helper.getDecoratedMeasurement(targetView) / 2f
+                && Math.abs(distance) < helper.getDecoratedMeasurement(targetView) * 1.5f) {
+            distance = 1;
+        }
+
+        return distance;
     }
 
     private int distanceToEnd(View targetView, OrientationHelper helper, boolean fromStart) {
         if (mIsRtlHorizontal && !fromStart) {
             return distanceToStart(targetView, helper, true);
         }
-        return helper.getDecoratedEnd(targetView) - helper.getEndAfterPadding();
+
+        int distance = helper.getDecoratedEnd(targetView) - helper.getEndAfterPadding();
+
+        if (Math.abs(distance) > helper.getDecoratedMeasurement(targetView) / 2f
+                && Math.abs(distance) < helper.getDecoratedMeasurement(targetView) * 1.5f) {
+            distance = 1;
+        }
+
+        return distance;
     }
 
     /**
@@ -138,7 +157,6 @@ public class GravitySnapHelper extends LinearSnapHelper {
                 visibleWidth = (float) helper.getDecoratedEnd(child)
                         / helper.getDecoratedMeasurement(child);
             }
-
 
             if (visibleWidth > 0.5f) {
                 return child;
@@ -193,7 +211,7 @@ public class GravitySnapHelper extends LinearSnapHelper {
             } else {
                 // If we're at the start of the list, we shouldn't snap
                 // to avoid having the first item not completely visible.
-                boolean startOfList =((LinearLayoutManager) layoutManager)
+                boolean startOfList = ((LinearLayoutManager) layoutManager)
                         .findFirstCompletelyVisibleItemPosition() == 0;
 
                 if (mSnapLastItemEnabled && startOfList) {

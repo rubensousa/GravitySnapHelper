@@ -28,9 +28,8 @@ public class GravitySnapHelper extends LinearSnapHelper {
             throw new IllegalArgumentException("Invalid gravity value. Use START " +
                     "| END | BOTTOM | TOP constants");
         }
-
-        mSnapLastItemEnabled = enableSnapLastItem;
         mGravity = gravity;
+        mSnapLastItemEnabled = enableSnapLastItem;
     }
 
     @Override
@@ -67,6 +66,7 @@ public class GravitySnapHelper extends LinearSnapHelper {
         } else {
             out[1] = 0;
         }
+
         return out;
     }
 
@@ -88,6 +88,13 @@ public class GravitySnapHelper extends LinearSnapHelper {
         return super.findSnapView(layoutManager);
     }
 
+    /**
+     * Enable snapping of the last item that's snappable.
+     * The default value is false, because you can't see the last item completely
+     * if this is enabled.
+     *
+     * @param snap true if you want to enable snapping of the last snappable item
+     */
     public void enableLastItemSnap(boolean snap) {
         mSnapLastItemEnabled = snap;
     }

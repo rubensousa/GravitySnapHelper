@@ -1,16 +1,36 @@
+/*
+ * Copyright (C) 2016 The Android Open Source Project
+ * Copyright (C) 2016 Rúben Sousa
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific languag`e governing permissions and
+ * limitations under the License.
+ */
+
 package com.github.rubensousa.gravitysnaphelper;
 
+import android.graphics.PointF;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SnapHelper;
 import android.view.Gravity;
 import android.view.View;
 
 
-public class GravitySnapHelper extends LinearSnapHelper {
+public class GravitySnapHelper extends SnapHelper {
+
+    private static final float INVALID_DISTANCE = 1f;
 
     private OrientationHelper mVerticalHelper;
     private OrientationHelper mHorizontalHelper;
@@ -40,6 +60,71 @@ public class GravitySnapHelper extends LinearSnapHelper {
                     = recyclerView.getContext().getResources().getBoolean(R.bool.is_rtl);
         }
         super.attachToRecyclerView(recyclerView);
+    }
+
+    @Override
+    public int findTargetSnapPosition(RecyclerView.LayoutManager layoutManager, int velocityX,
+                                      int velocityY) {
+        if (!(layoutManager instanceof RecyclerView.SmoothScroller.ScrollVectorProvider)) {
+            return RecyclerView.NO_POSITION;
+        }
+
+        final int itemCount = layoutManager.getItemCount();
+        if (itemCount == 0) {
+            return RecyclerView.NO_POSITION;
+        }
+
+        final View currentView = findSnapView(layoutManager);
+        if (currentView == null) {
+            return RecyclerView.NO_POSITION;
+        }
+
+        final int currentPosition = layoutManager.getPosition(currentView);
+        if (currentPosition == RecyclerView.NO_POSITION) {
+            return RecyclerView.NO_POSITION;
+        }
+
+        RecyclerView.SmoothScroller.ScrollVectorProvider vectorProvider =
+                (RecyclerView.SmoothScroller.ScrollVectorProvider) layoutManager;
+
+        PointF vectorForEnd = vectorProvider.computeScrollVectorForPosition(itemCount - 1);
+        if (vectorForEnd == null) {
+            return RecyclerView.NO_POSITION;
+        }
+
+        int vDeltaJump, hDeltaJump;
+        if (layoutManager.canScrollHorizontally()) {
+            hDeltaJump = estimateNextPositionDiffForFling(layoutManager,
+                    getHorizontalHelper(layoutManager), velocityX, 0);
+            if (vectorForEnd.x < 0) {
+                hDeltaJump = -hDeltaJump;
+            }
+        } else {
+            hDeltaJump = 0;
+        }
+        if (layoutManager.canScrollVertically()) {
+            vDeltaJump = estimateNextPositionDiffForFling(layoutManager,
+                    getVerticalHelper(layoutManager), 0, velocityY);
+            if (vectorForEnd.y < 0) {
+                vDeltaJump = -vDeltaJump;
+            }
+        } else {
+            vDeltaJump = 0;
+        }
+
+        int deltaJump = layoutManager.canScrollVertically() ? vDeltaJump : hDeltaJump;
+        if (deltaJump == 0) {
+            return RecyclerView.NO_POSITION;
+        }
+
+        int targetPos = currentPosition + deltaJump;
+        if (targetPos < 0) {
+            targetPos = 0;
+        }
+        if (targetPos >= itemCount) {
+            targetPos = itemCount - 1;
+        }
+        return targetPos;
     }
 
     @Override
@@ -85,7 +170,7 @@ public class GravitySnapHelper extends LinearSnapHelper {
             }
         }
 
-        return super.findSnapView(layoutManager);
+        return null;
     }
 
     /**
@@ -104,17 +189,7 @@ public class GravitySnapHelper extends LinearSnapHelper {
             return distanceToEnd(targetView, helper, true);
         }
 
-        int distance = helper.getDecoratedStart(targetView) - helper.getStartAfterPadding();
-
-        // Since the wrong targetView gets passed sometimes, we need to check if the distance
-        // to snap is greater than the view's width, but smaller than 150% since this also
-        // gets called when there's a fling with high velocity.
-        if (Math.abs(distance) > helper.getDecoratedMeasurement(targetView) / 2f
-                && Math.abs(distance) < helper.getDecoratedMeasurement(targetView) * 1.5f) {
-            distance = 1;
-        }
-
-        return distance;
+        return helper.getDecoratedStart(targetView) - helper.getStartAfterPadding();
     }
 
     private int distanceToEnd(View targetView, OrientationHelper helper, boolean fromStart) {
@@ -122,14 +197,7 @@ public class GravitySnapHelper extends LinearSnapHelper {
             return distanceToStart(targetView, helper, true);
         }
 
-        int distance = helper.getDecoratedEnd(targetView) - helper.getEndAfterPadding();
-
-        if (Math.abs(distance) > helper.getDecoratedMeasurement(targetView) / 2f
-                && Math.abs(distance) < helper.getDecoratedMeasurement(targetView) * 1.5f) {
-            distance = 1;
-        }
-
-        return distance;
+        return helper.getDecoratedEnd(targetView) - helper.getEndAfterPadding();
     }
 
     /**
@@ -150,7 +218,6 @@ public class GravitySnapHelper extends LinearSnapHelper {
             }
 
             View child = layoutManager.findViewByPosition(firstChild);
-
 
             float visibleWidth;
 
@@ -188,7 +255,7 @@ public class GravitySnapHelper extends LinearSnapHelper {
             }
         }
 
-        return super.findSnapView(layoutManager);
+        return null;
     }
 
     private View findEndView(RecyclerView.LayoutManager layoutManager,
@@ -234,7 +301,86 @@ public class GravitySnapHelper extends LinearSnapHelper {
             }
         }
 
-        return super.findSnapView(layoutManager);
+        return null;
+    }
+
+    /**
+     * Estimates a position to which SnapHelper will try to scroll to in response to a fling.
+     *
+     * @param layoutManager The {@link RecyclerView.LayoutManager} associated with the attached
+     *                      {@link RecyclerView}.
+     * @param helper        The {@link OrientationHelper} that is created from the LayoutManager.
+     * @param velocityX     The velocity on the x axis.
+     * @param velocityY     The velocity on the y axis.
+     * @return The diff between the target scroll position and the current position.
+     */
+    private int estimateNextPositionDiffForFling(RecyclerView.LayoutManager layoutManager,
+                                                 OrientationHelper helper, int velocityX, int velocityY) {
+        int[] distances = calculateScrollDistance(velocityX, velocityY);
+        float distancePerChild = computeDistancePerChild(layoutManager, helper);
+        if (distancePerChild <= 0) {
+            return 0;
+        }
+        int distance =
+                Math.abs(distances[0]) > Math.abs(distances[1]) ? distances[0] : distances[1];
+
+        if (Math.abs(distance) < distancePerChild / 2f) {
+            return 0;
+        }
+
+        return (int) Math.floor(distance / distancePerChild);
+    }
+
+    /**
+     * Computes an average pixel value to pass a single child.
+     * <p>
+     * Returns a negative value if it cannot be calculated.
+     *
+     * @param layoutManager The {@link RecyclerView.LayoutManager} associated with the attached
+     *                      {@link RecyclerView}.
+     * @param helper        The relevant {@link OrientationHelper} for the attached
+     *                      {@link RecyclerView.LayoutManager}.
+     * @return A float value that is the average number of pixels needed to scroll by one view in
+     * the relevant direction.
+     */
+    private float computeDistancePerChild(RecyclerView.LayoutManager layoutManager,
+                                          OrientationHelper helper) {
+        View minPosView = null;
+        View maxPosView = null;
+        int minPos = Integer.MAX_VALUE;
+        int maxPos = Integer.MIN_VALUE;
+        int childCount = layoutManager.getChildCount();
+        if (childCount == 0) {
+            return INVALID_DISTANCE;
+        }
+
+        for (int i = 0; i < childCount; i++) {
+            View child = layoutManager.getChildAt(i);
+            final int pos = layoutManager.getPosition(child);
+            if (pos == RecyclerView.NO_POSITION) {
+                continue;
+            }
+            if (pos < minPos) {
+                minPos = pos;
+                minPosView = child;
+            }
+            if (pos > maxPos) {
+                maxPos = pos;
+                maxPosView = child;
+            }
+        }
+        if (minPosView == null || maxPosView == null) {
+            return INVALID_DISTANCE;
+        }
+        int start = Math.min(helper.getDecoratedStart(minPosView),
+                helper.getDecoratedStart(maxPosView));
+        int end = Math.max(helper.getDecoratedEnd(minPosView),
+                helper.getDecoratedEnd(maxPosView));
+        int distance = end - start;
+        if (distance == 0) {
+            return INVALID_DISTANCE;
+        }
+        return 1f * distance / ((maxPos - minPos) + 1);
     }
 
     private OrientationHelper getVerticalHelper(RecyclerView.LayoutManager layoutManager) {

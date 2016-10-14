@@ -11,7 +11,7 @@ If you need snapping support to start, top, end or bottom, use GravitySnapHelper
 Add this to your build.gradle:
 
 ```groovy
-compile 'com.github.rubensousa:gravitysnaphelper:0.2'
+compile 'com.github.rubensousa:gravitysnaphelper:0.3'
 ```
 
 Otherwise, center snapping is done with LinearSnapHelper (part of the recyclerview-v7 package).
@@ -44,6 +44,7 @@ snapHelperTop.attachToRecyclerView(topRecyclerView);
 
 ## License
 
+    Copyright 2016 The Android Open Source Project
     Copyright 2016 Rúben Sousa
     
     Licensed under the Apache License, Version 2.0 (the "License");

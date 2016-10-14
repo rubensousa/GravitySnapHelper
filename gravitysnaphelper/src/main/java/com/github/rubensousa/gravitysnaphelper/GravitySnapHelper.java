@@ -61,6 +61,10 @@ public class GravitySnapHelper extends SnapHelper {
         this(gravity, false, null);
     }
 
+    public GravitySnapHelper(int gravity, boolean enableSnapLastItem) {
+        this(gravity, enableSnapLastItem, null);
+    }
+
     public GravitySnapHelper(int gravity, boolean enableSnapLastItem, SnapListener snapListener) {
         if (gravity != Gravity.START && gravity != Gravity.END
                 && gravity != Gravity.BOTTOM && gravity != Gravity.TOP) {

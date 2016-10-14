@@ -4,6 +4,7 @@ package com.github.rubensousa.recyclerviewsnap;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -15,7 +16,7 @@ import com.github.rubensousa.gravitysnaphelper.GravitySnapHelper;
 
 import java.util.ArrayList;
 
-public class SnapAdapter extends RecyclerView.Adapter<SnapAdapter.ViewHolder> {
+public class SnapAdapter extends RecyclerView.Adapter<SnapAdapter.ViewHolder> implements GravitySnapHelper.SnapListener {
 
     public static final int VERTICAL = 0;
     public static final int HORIZONTAL = 1;
@@ -82,7 +83,7 @@ public class SnapAdapter extends RecyclerView.Adapter<SnapAdapter.ViewHolder> {
             holder.recyclerView.setLayoutManager(new LinearLayoutManager(holder
                     .recyclerView.getContext(), LinearLayoutManager.HORIZONTAL, false));
             holder.recyclerView.setOnFlingListener(null);
-            new GravitySnapHelper(snap.getGravity()).attachToRecyclerView(holder.recyclerView);
+            new GravitySnapHelper(snap.getGravity(), false, this).attachToRecyclerView(holder.recyclerView);
         } else if (snap.getGravity() == Gravity.CENTER_HORIZONTAL
                 || snap.getGravity() == Gravity.CENTER_VERTICAL
                 || snap.getGravity() == Gravity.CENTER) {
@@ -106,6 +107,11 @@ public class SnapAdapter extends RecyclerView.Adapter<SnapAdapter.ViewHolder> {
     @Override
     public int getItemCount() {
         return mSnaps.size();
+    }
+
+    @Override
+    public void onSnap(int position) {
+        Log.d("Snapped: ", position + "");
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

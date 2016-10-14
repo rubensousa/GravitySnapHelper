@@ -32,22 +32,42 @@ public class GravitySnapHelper extends SnapHelper {
 
     private static final float INVALID_DISTANCE = 1f;
 
+
     private OrientationHelper mVerticalHelper;
     private OrientationHelper mHorizontalHelper;
     private int mGravity;
     private boolean mIsRtlHorizontal;
     private boolean mSnapLastItemEnabled;
+    SnapListener mSnapListener;
+    boolean mSnapping;
+    private RecyclerView.OnScrollListener mScrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+            if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
+                mSnapping = false;
+            }
+            if (newState == RecyclerView.SCROLL_STATE_IDLE && mSnapping && mSnapListener != null) {
+                int position = getSnappedPosition(recyclerView);
+                if (position != RecyclerView.NO_POSITION) {
+                    mSnapListener.onSnap(position);
+                }
+                mSnapping = false;
+            }
+        }
+    };
 
     public GravitySnapHelper(int gravity) {
-        this(gravity, false);
+        this(gravity, false, null);
     }
 
-    public GravitySnapHelper(int gravity, boolean enableSnapLastItem) {
+    public GravitySnapHelper(int gravity, boolean enableSnapLastItem, SnapListener snapListener) {
         if (gravity != Gravity.START && gravity != Gravity.END
                 && gravity != Gravity.BOTTOM && gravity != Gravity.TOP) {
             throw new IllegalArgumentException("Invalid gravity value. Use START " +
                     "| END | BOTTOM | TOP constants");
         }
+        mSnapListener = snapListener;
         mGravity = gravity;
         mSnapLastItemEnabled = enableSnapLastItem;
     }
@@ -55,12 +75,18 @@ public class GravitySnapHelper extends SnapHelper {
     @Override
     public void attachToRecyclerView(@Nullable RecyclerView recyclerView)
             throws IllegalStateException {
-        if (recyclerView != null && (mGravity == Gravity.START || mGravity == Gravity.END)) {
-            mIsRtlHorizontal
-                    = recyclerView.getContext().getResources().getBoolean(R.bool.is_rtl);
+        if (recyclerView != null) {
+            if (mGravity == Gravity.START || mGravity == Gravity.END) {
+                mIsRtlHorizontal
+                        = recyclerView.getContext().getResources().getBoolean(R.bool.is_rtl);
+            }
+            if (mSnapListener != null) {
+                recyclerView.addOnScrollListener(mScrollListener);
+            }
         }
         super.attachToRecyclerView(recyclerView);
     }
+
 
     @Override
     public int findTargetSnapPosition(RecyclerView.LayoutManager layoutManager, int velocityX,
@@ -157,20 +183,27 @@ public class GravitySnapHelper extends SnapHelper {
 
     @Override
     public View findSnapView(RecyclerView.LayoutManager layoutManager) {
+        View snapView = null;
         if (layoutManager instanceof LinearLayoutManager) {
             switch (mGravity) {
                 case Gravity.START:
-                    return findStartView(layoutManager, getHorizontalHelper(layoutManager));
+                    snapView = findStartView(layoutManager, getHorizontalHelper(layoutManager));
+                    break;
                 case Gravity.END:
-                    return findEndView(layoutManager, getHorizontalHelper(layoutManager));
+                    snapView = findEndView(layoutManager, getHorizontalHelper(layoutManager));
+                    break;
                 case Gravity.TOP:
-                    return findStartView(layoutManager, getVerticalHelper(layoutManager));
+                    snapView = findStartView(layoutManager, getVerticalHelper(layoutManager));
+                    break;
                 case Gravity.BOTTOM:
-                    return findEndView(layoutManager, getVerticalHelper(layoutManager));
+                    snapView = findEndView(layoutManager, getVerticalHelper(layoutManager));
+                    break;
             }
         }
 
-        return null;
+        mSnapping = snapView != null;
+
+        return snapView;
     }
 
     /**
@@ -383,6 +416,21 @@ public class GravitySnapHelper extends SnapHelper {
         return 1f * distance / ((maxPos - minPos) + 1);
     }
 
+    int getSnappedPosition(RecyclerView recyclerView) {
+        RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
+
+        if (layoutManager instanceof LinearLayoutManager) {
+            if (mGravity == Gravity.START || mGravity == Gravity.TOP) {
+                return ((LinearLayoutManager) layoutManager).findFirstCompletelyVisibleItemPosition();
+            } else if (mGravity == Gravity.END || mGravity == Gravity.BOTTOM) {
+                return ((LinearLayoutManager) layoutManager).findLastCompletelyVisibleItemPosition();
+            }
+        }
+
+        return RecyclerView.NO_POSITION;
+
+    }
+
     private OrientationHelper getVerticalHelper(RecyclerView.LayoutManager layoutManager) {
         if (mVerticalHelper == null) {
             mVerticalHelper = OrientationHelper.createVerticalHelper(layoutManager);
@@ -395,6 +443,10 @@ public class GravitySnapHelper extends SnapHelper {
             mHorizontalHelper = OrientationHelper.createHorizontalHelper(layoutManager);
         }
         return mHorizontalHelper;
+    }
+
+    public interface SnapListener {
+        void onSnap(int position);
     }
 
 }

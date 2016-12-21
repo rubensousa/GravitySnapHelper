@@ -13,18 +13,25 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
     private List<App> mApps;
     private boolean mHorizontal;
+    private boolean mPager;
 
-    public Adapter(boolean horizontal, List<App> apps) {
+    public Adapter(boolean horizontal, boolean pager, List<App> apps) {
         mHorizontal = horizontal;
         mApps = apps;
+        mPager = pager;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return mHorizontal ? new ViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.adapter, parent, false)) :
-                new ViewHolder(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.adapter_vertical, parent, false));
+        if (mPager) {
+            return new ViewHolder(LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.adapter_pager, parent, false));
+        } else {
+            return mHorizontal ? new ViewHolder(LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.adapter, parent, false)) :
+                    new ViewHolder(LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.adapter_vertical, parent, false));
+        }
     }
 
     @Override
@@ -34,6 +41,11 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         holder.nameTextView.setText(app.getName());
         holder.ratingTextView.setText(String.valueOf(app.getRating()));
 
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return super.getItemViewType(position);
     }
 
     @Override

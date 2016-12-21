@@ -3,6 +3,7 @@ package com.github.rubensousa.recyclerviewsnap;
 
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSnapHelper;
+import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
@@ -84,14 +85,17 @@ public class SnapAdapter extends RecyclerView.Adapter<SnapAdapter.ViewHolder> im
                     .recyclerView.getContext(), LinearLayoutManager.HORIZONTAL, false));
             holder.recyclerView.setOnFlingListener(null);
             new GravitySnapHelper(snap.getGravity(), false, this).attachToRecyclerView(holder.recyclerView);
-        } else if (snap.getGravity() == Gravity.CENTER_HORIZONTAL
-                || snap.getGravity() == Gravity.CENTER_VERTICAL
-                || snap.getGravity() == Gravity.CENTER) {
+        } else if (snap.getGravity() == Gravity.CENTER_HORIZONTAL) {
             holder.recyclerView.setLayoutManager(new LinearLayoutManager(holder
                     .recyclerView.getContext(), snap.getGravity() == Gravity.CENTER_HORIZONTAL ?
                     LinearLayoutManager.HORIZONTAL : LinearLayoutManager.VERTICAL, false));
             holder.recyclerView.setOnFlingListener(null);
             new LinearSnapHelper().attachToRecyclerView(holder.recyclerView);
+        } else if (snap.getGravity() == Gravity.CENTER) { // Pager snap
+            holder.recyclerView.setLayoutManager(new LinearLayoutManager(holder
+                    .recyclerView.getContext(), LinearLayoutManager.HORIZONTAL, false));
+            holder.recyclerView.setOnFlingListener(null);
+            new PagerSnapHelper().attachToRecyclerView(holder.recyclerView);
         } else { // Top / Bottom
             holder.recyclerView.setLayoutManager(new LinearLayoutManager(holder
                     .recyclerView.getContext()));
@@ -99,9 +103,11 @@ public class SnapAdapter extends RecyclerView.Adapter<SnapAdapter.ViewHolder> im
             new GravitySnapHelper(snap.getGravity()).attachToRecyclerView(holder.recyclerView);
         }
 
+
         holder.recyclerView.setAdapter(new Adapter(snap.getGravity() == Gravity.START
                 || snap.getGravity() == Gravity.END
-                || snap.getGravity() == Gravity.CENTER_HORIZONTAL, snap.getApps()));
+                || snap.getGravity() == Gravity.CENTER_HORIZONTAL,
+                snap.getGravity() == Gravity.CENTER, snap.getApps()));
     }
 
     @Override

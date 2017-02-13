@@ -3,6 +3,8 @@
     android:layout_width="100dp"
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
+    android:clickable="true"
+    android:foreground="?attr/selectableItemBackground"
     android:orientation="vertical">
 
     <LinearLayout
@@ -15,8 +17,8 @@
             android:id="@+id/imageView"
             android:layout_width="88dp"
             android:layout_height="88dp"
-            android:scaleX="1.2"
             android:scaleType="fitXY"
+            android:scaleX="1.2"
             android:scaleY="1.2"
             android:src="@drawable/ic_docs_48dp" />
 

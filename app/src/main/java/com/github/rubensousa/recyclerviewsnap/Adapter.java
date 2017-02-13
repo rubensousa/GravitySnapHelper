@@ -1,6 +1,7 @@
 package com.github.rubensousa.recyclerviewsnap;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +41,6 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         holder.imageView.setImageResource(app.getDrawable());
         holder.nameTextView.setText(app.getName());
         holder.ratingTextView.setText(String.valueOf(app.getRating()));
-
     }
 
     @Override
@@ -53,7 +53,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         return mApps.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public ImageView imageView;
         public TextView nameTextView;
@@ -61,11 +61,16 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
         public ViewHolder(View itemView) {
             super(itemView);
+            itemView.setOnClickListener(this);
             imageView = (ImageView) itemView.findViewById(R.id.imageView);
             nameTextView = (TextView) itemView.findViewById(R.id.nameTextView);
             ratingTextView = (TextView) itemView.findViewById(R.id.ratingTextView);
         }
 
+        @Override
+        public void onClick(View v) {
+            Log.d("App", mApps.get(getAdapterPosition()).getName());
+        }
     }
 
 }

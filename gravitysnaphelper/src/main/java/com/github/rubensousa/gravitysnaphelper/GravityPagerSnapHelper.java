@@ -19,27 +19,26 @@ package com.github.rubensousa.gravitysnaphelper;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearSnapHelper;
+import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-
-public class GravitySnapHelper
-        extends LinearSnapHelper {
+public class GravityPagerSnapHelper
+        extends PagerSnapHelper {
 
     private GravitySnapUtility mSnapUtility;
 
     // region Construction
 
-    public GravitySnapHelper(int gravity) {
+    public GravityPagerSnapHelper(int gravity) {
         this(gravity, false, null);
     }
 
-    public GravitySnapHelper(int gravity, boolean enableSnapLastItem) {
+    public GravityPagerSnapHelper(int gravity, boolean enableSnapLastItem) {
         this(gravity, enableSnapLastItem, null);
     }
 
-    public GravitySnapHelper(int gravity, boolean enableSnapLastItem, SnapListener snapListener) {
+    public GravityPagerSnapHelper(int gravity, boolean enableSnapLastItem, SnapListener snapListener) {
         super();
         mSnapUtility = new GravitySnapUtility(gravity, enableSnapLastItem, snapListener);
     }
@@ -80,13 +79,4 @@ public class GravitySnapHelper
     }
 
     // endregion
-
-    /**
-     * @deprecated use {@link com.github.rubensousa.gravitysnaphelper.SnapListener} instead.
-     */
-    @Deprecated
-    public interface SnapListener extends com.github.rubensousa.gravitysnaphelper.SnapListener {
-
-        // INF: Empty
-    }
 }

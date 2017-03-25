@@ -1,6 +1,7 @@
 package com.github.rubensousa.gravitysnaphelper;
 
 
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
@@ -56,9 +57,11 @@ class GravityDelegate {
 
     public void attachToRecyclerView(@NonNull RecyclerView recyclerView) {
         if (recyclerView != null) {
-            if (gravity == Gravity.START || gravity == Gravity.END) {
+            if ((gravity == Gravity.START || gravity == Gravity.END)
+                    && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 isRtlHorizontal
-                        = recyclerView.getContext().getResources().getBoolean(R.bool.is_rtl);
+                        = recyclerView.getContext().getResources().getConfiguration()
+                        .getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
             }
             if (listener != null) {
                 recyclerView.addOnScrollListener(mScrollListener);

@@ -35,11 +35,11 @@ class GravityDelegate {
     };
 
     public GravityDelegate(int gravity) {
-        this(gravity, true, null);
+        this(gravity, false, null);
     }
 
     public GravityDelegate(int gravity, GravitySnapHelper.SnapListener listener) {
-        this(gravity, true, listener);
+        this(gravity, false, listener);
     }
 
     public GravityDelegate(int gravity, boolean enableSnapLast,

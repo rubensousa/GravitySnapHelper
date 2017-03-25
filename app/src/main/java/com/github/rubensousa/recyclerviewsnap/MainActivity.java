@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements Toolbar.OnMenuIte
             snapAdapter.addSnap(new Snap(Gravity.CENTER_HORIZONTAL, "Snap center", apps));
             snapAdapter.addSnap(new Snap(Gravity.START, "Snap start", apps));
             snapAdapter.addSnap(new Snap(Gravity.END, "Snap end", apps));
-            snapAdapter.addSnap(new Snap(Gravity.CENTER, "Pager snap", apps));
+            snapAdapter.addSnap(new Snap(Gravity.CENTER, "GravityPager snap", apps));
         } else {
             snapAdapter.addSnap(new Snap(Gravity.CENTER_VERTICAL, "Snap center", apps));
             snapAdapter.addSnap(new Snap(Gravity.TOP, "Snap top", apps));

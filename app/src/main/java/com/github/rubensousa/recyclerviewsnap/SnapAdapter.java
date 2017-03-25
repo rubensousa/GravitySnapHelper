@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.github.rubensousa.gravitysnaphelper.GravityPagerSnapHelper;
 import com.github.rubensousa.gravitysnaphelper.GravitySnapHelper;
 
 import java.util.ArrayList;
@@ -96,7 +97,7 @@ public class SnapAdapter extends RecyclerView.Adapter<SnapAdapter.ViewHolder> im
             holder.recyclerView.setLayoutManager(new LinearLayoutManager(holder
                     .recyclerView.getContext(), LinearLayoutManager.HORIZONTAL, false));
             holder.recyclerView.setOnFlingListener(null);
-            new PagerSnapHelper().attachToRecyclerView(holder.recyclerView);
+            new GravityPagerSnapHelper(Gravity.START).attachToRecyclerView(holder.recyclerView);
         } else { // Top / Bottom
             holder.recyclerView.setLayoutManager(new LinearLayoutManager(holder
                     .recyclerView.getContext()));

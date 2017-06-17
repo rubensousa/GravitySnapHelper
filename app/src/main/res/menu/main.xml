@@ -5,4 +5,9 @@
         android:id="@+id/layoutType"
         android:title="Vertical"
         app:showAsAction="always"></item>
+
+    <item
+        android:id="@+id/grid"
+        android:title="Grid"
+        app:showAsAction="always"></item>
 </menu>

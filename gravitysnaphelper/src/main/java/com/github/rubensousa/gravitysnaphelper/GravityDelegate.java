@@ -180,7 +180,7 @@ class GravityDelegate {
             // to avoid having the last item not completely visible.
             boolean endOfList = ((LinearLayoutManager) layoutManager)
                     .findLastCompletelyVisibleItemPosition()
-                    >= layoutManager.getItemCount() - offset;
+                    == layoutManager.getItemCount() - 1;
 
             if (visibleWidth > 0.5f && !endOfList) {
                 return child;
@@ -228,7 +228,7 @@ class GravityDelegate {
             // If we're at the start of the list, we shouldn't snap
             // to avoid having the first item not completely visible.
             boolean startOfList = ((LinearLayoutManager) layoutManager)
-                    .findFirstCompletelyVisibleItemPosition() <= offset - 1;
+                    .findFirstCompletelyVisibleItemPosition() == 0;
 
             if (visibleWidth > 0.5f && !startOfList) {
                 return child;

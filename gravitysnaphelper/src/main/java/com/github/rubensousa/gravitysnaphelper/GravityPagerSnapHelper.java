@@ -3,6 +3,8 @@ package com.github.rubensousa.gravitysnaphelper;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -27,6 +29,11 @@ public class GravityPagerSnapHelper extends PagerSnapHelper {
     @Override
     public void attachToRecyclerView(@Nullable RecyclerView recyclerView)
             throws IllegalStateException {
+        if (!(recyclerView.getLayoutManager() instanceof LinearLayoutManager)
+                || recyclerView.getLayoutManager() instanceof GridLayoutManager) {
+            throw new IllegalStateException("GravityPagerSnapHelper needs a RecyclerView" +
+                    " with a LinearLayoutManager");
+        }
         delegate.attachToRecyclerView(recyclerView);
         super.attachToRecyclerView(recyclerView);
     }

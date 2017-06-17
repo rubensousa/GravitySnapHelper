@@ -3,6 +3,7 @@ package com.github.rubensousa.gravitysnaphelper;
 
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
@@ -150,6 +151,11 @@ class GravityDelegate {
 
         if (layoutManager instanceof LinearLayoutManager) {
             int firstChild = ((LinearLayoutManager) layoutManager).findFirstVisibleItemPosition();
+            int offset = 1;
+
+            if (layoutManager instanceof GridLayoutManager) {
+                offset += ((GridLayoutManager) layoutManager).getSpanCount() - 1;
+            }
 
             if (firstChild == RecyclerView.NO_POSITION) {
                 return null;
@@ -174,7 +180,7 @@ class GravityDelegate {
             // to avoid having the last item not completely visible.
             boolean endOfList = ((LinearLayoutManager) layoutManager)
                     .findLastCompletelyVisibleItemPosition()
-                    == layoutManager.getItemCount() - 1;
+                    >= layoutManager.getItemCount() - offset;
 
             if (visibleWidth > 0.5f && !endOfList) {
                 return child;
@@ -185,7 +191,7 @@ class GravityDelegate {
             } else {
                 // If the child wasn't returned, we need to return
                 // the next view close to the start.
-                return layoutManager.findViewByPosition(firstChild + 1);
+                return layoutManager.findViewByPosition(firstChild + offset);
             }
         }
 
@@ -197,6 +203,11 @@ class GravityDelegate {
 
         if (layoutManager instanceof LinearLayoutManager) {
             int lastChild = ((LinearLayoutManager) layoutManager).findLastVisibleItemPosition();
+            int offset = 1;
+
+            if (layoutManager instanceof GridLayoutManager) {
+                offset += ((GridLayoutManager) layoutManager).getSpanCount() - 1;
+            }
 
             if (lastChild == RecyclerView.NO_POSITION) {
                 return null;
@@ -217,7 +228,7 @@ class GravityDelegate {
             // If we're at the start of the list, we shouldn't snap
             // to avoid having the first item not completely visible.
             boolean startOfList = ((LinearLayoutManager) layoutManager)
-                    .findFirstCompletelyVisibleItemPosition() == 0;
+                    .findFirstCompletelyVisibleItemPosition() <= offset - 1;
 
             if (visibleWidth > 0.5f && !startOfList) {
                 return child;
@@ -227,7 +238,7 @@ class GravityDelegate {
                 return null;
             } else {
                 // If the child wasn't returned, we need to return the previous view
-                return layoutManager.findViewByPosition(lastChild - 1);
+                return layoutManager.findViewByPosition(lastChild - offset);
             }
         }
         return null;

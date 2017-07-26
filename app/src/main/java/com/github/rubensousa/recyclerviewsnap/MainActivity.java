@@ -7,6 +7,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 
@@ -58,13 +59,17 @@ public class MainActivity extends AppCompatActivity implements Toolbar.OnMenuIte
             snapAdapter.addSnap(new Snap(Gravity.START, "Snap start", apps));
             snapAdapter.addSnap(new Snap(Gravity.END, "Snap end", apps));
             snapAdapter.addSnap(new Snap(Gravity.CENTER, "GravityPager snap", apps));
+            mRecyclerView.setAdapter(snapAdapter);
         } else {
-            snapAdapter.addSnap(new Snap(Gravity.CENTER_VERTICAL, "Snap center", apps));
-            snapAdapter.addSnap(new Snap(Gravity.TOP, "Snap top", apps));
-            snapAdapter.addSnap(new Snap(Gravity.BOTTOM, "Snap bottom", apps));
+            Adapter adapter = new Adapter(false, false, apps);
+            mRecyclerView.setAdapter(adapter);
+            new GravitySnapHelper(Gravity.TOP, false, new GravitySnapHelper.SnapListener() {
+                @Override
+                public void onSnap(int position) {
+                    Log.d("Snapped", position + "");
+                }
+            }).attachToRecyclerView(mRecyclerView);
         }
-
-        mRecyclerView.setAdapter(snapAdapter);
     }
 
     private List<App> getApps() {

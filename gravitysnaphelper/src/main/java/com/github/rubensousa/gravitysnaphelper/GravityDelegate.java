@@ -3,6 +3,7 @@ package com.github.rubensousa.gravitysnaphelper;
 
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
@@ -17,8 +18,8 @@ class GravityDelegate {
     private int gravity;
     private boolean isRtlHorizontal;
     private boolean snapLastItem;
-    GravitySnapHelper.SnapListener listener;
-    boolean snapping;
+    private GravitySnapHelper.SnapListener listener;
+    private boolean snapping;
     private RecyclerView.OnScrollListener mScrollListener = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -56,8 +57,9 @@ class GravityDelegate {
         this.listener = listener;
     }
 
-    public void attachToRecyclerView(@NonNull RecyclerView recyclerView) {
+    public void attachToRecyclerView(@Nullable RecyclerView recyclerView) {
         if (recyclerView != null) {
+            recyclerView.setOnFlingListener(null);
             if ((gravity == Gravity.START || gravity == Gravity.END)
                     && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 isRtlHorizontal

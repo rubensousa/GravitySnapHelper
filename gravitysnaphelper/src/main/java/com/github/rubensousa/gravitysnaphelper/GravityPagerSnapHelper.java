@@ -30,8 +30,8 @@ public class GravityPagerSnapHelper extends PagerSnapHelper {
     public void attachToRecyclerView(@Nullable RecyclerView recyclerView)
             throws IllegalStateException {
         if (recyclerView != null
-                && !(recyclerView.getLayoutManager() instanceof LinearLayoutManager)
-                || recyclerView.getLayoutManager() instanceof GridLayoutManager) {
+                && (!(recyclerView.getLayoutManager() instanceof LinearLayoutManager)
+                || recyclerView.getLayoutManager() instanceof GridLayoutManager)) {
             throw new IllegalStateException("GravityPagerSnapHelper needs a RecyclerView" +
                     " with a LinearLayoutManager");
         }

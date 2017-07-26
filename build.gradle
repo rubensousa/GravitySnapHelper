@@ -11,6 +11,7 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+        google()
     }
 }
 
@@ -19,6 +20,9 @@ task clean(type: Delete) {
 }
 
 ext {
-    buildToolsVersion = '25.0.2'
-    supportLibraryVersion = '25.3.0'
+    compileSdkVersion = 26
+    buildToolsVersion = '26.0.1'
+    minSdkVersion = 14
+    targetSdkVersion = compileSdkVersion
+    supportLibVersion = '26.0.0'
 }

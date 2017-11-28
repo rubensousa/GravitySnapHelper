@@ -11,7 +11,7 @@ import android.view.View;
 
 public class GravityPagerSnapHelper extends PagerSnapHelper {
 
-    private GravityDelegate delegate;
+    @NonNull private final GravityDelegate delegate;
 
     public GravityPagerSnapHelper(int gravity) {
         this(gravity, false, null);
@@ -22,7 +22,7 @@ public class GravityPagerSnapHelper extends PagerSnapHelper {
     }
 
     public GravityPagerSnapHelper(int gravity, boolean enableSnapLastItem,
-                                  GravitySnapHelper.SnapListener snapListener) {
+                                  @Nullable GravitySnapHelper.SnapListener snapListener) {
         delegate = new GravityDelegate(gravity, enableSnapLastItem, snapListener);
     }
 

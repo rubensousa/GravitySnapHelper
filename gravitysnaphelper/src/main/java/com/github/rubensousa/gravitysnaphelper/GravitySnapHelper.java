@@ -26,7 +26,7 @@ import android.view.View;
 
 public class GravitySnapHelper extends LinearSnapHelper {
 
-    private GravityDelegate delegate;
+    @NonNull private final GravityDelegate delegate;
 
     public GravitySnapHelper(int gravity) {
         this(gravity, false, null);
@@ -36,7 +36,8 @@ public class GravitySnapHelper extends LinearSnapHelper {
         this(gravity, enableSnapLastItem, null);
     }
 
-    public GravitySnapHelper(int gravity, boolean enableSnapLastItem, SnapListener snapListener) {
+    public GravitySnapHelper(int gravity, boolean enableSnapLastItem,
+                             @Nullable SnapListener snapListener) {
         delegate = new GravityDelegate(gravity, enableSnapLastItem, snapListener);
     }
 

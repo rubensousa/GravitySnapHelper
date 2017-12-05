@@ -37,16 +37,8 @@ class GravityDelegate {
         }
     };
 
-    public GravityDelegate(int gravity) {
-        this(gravity, false, null);
-    }
-
-    public GravityDelegate(int gravity, GravitySnapHelper.SnapListener listener) {
-        this(gravity, false, listener);
-    }
-
     public GravityDelegate(int gravity, boolean enableSnapLast,
-                           GravitySnapHelper.SnapListener listener) {
+                           @Nullable GravitySnapHelper.SnapListener listener) {
         if (gravity != Gravity.START && gravity != Gravity.END
                 && gravity != Gravity.BOTTOM && gravity != Gravity.TOP) {
             throw new IllegalArgumentException("Invalid gravity value. Use START " +
@@ -72,6 +64,7 @@ class GravityDelegate {
         }
     }
 
+    @NonNull
     public int[] calculateDistanceToFinalSnap(@NonNull RecyclerView.LayoutManager layoutManager,
                                               @NonNull View targetView) {
         int[] out = new int[2];
@@ -99,6 +92,7 @@ class GravityDelegate {
         return out;
     }
 
+    @Nullable
     public View findSnapView(RecyclerView.LayoutManager layoutManager) {
         View snapView = null;
         if (layoutManager instanceof LinearLayoutManager) {
@@ -125,7 +119,7 @@ class GravityDelegate {
         snapLastItem = snap;
     }
 
-    private int distanceToStart(View targetView, OrientationHelper helper, boolean fromEnd) {
+    private int distanceToStart(View targetView, @NonNull OrientationHelper helper, boolean fromEnd) {
         if (isRtlHorizontal && !fromEnd) {
             return distanceToEnd(targetView, helper, true);
         }
@@ -133,7 +127,7 @@ class GravityDelegate {
         return helper.getDecoratedStart(targetView) - helper.getStartAfterPadding();
     }
 
-    private int distanceToEnd(View targetView, OrientationHelper helper, boolean fromStart) {
+    private int distanceToEnd(View targetView, @NonNull OrientationHelper helper, boolean fromStart) {
         if (isRtlHorizontal && !fromStart) {
             return distanceToStart(targetView, helper, true);
         }
@@ -148,8 +142,9 @@ class GravityDelegate {
      * @param helper        orientation helper to calculate view sizes
      * @return the first view in the LayoutManager to snap to
      */
+    @Nullable
     private View findStartView(RecyclerView.LayoutManager layoutManager,
-                               OrientationHelper helper) {
+                               @NonNull OrientationHelper helper) {
 
         if (layoutManager instanceof LinearLayoutManager) {
             int firstChild = ((LinearLayoutManager) layoutManager).findFirstVisibleItemPosition();
@@ -200,8 +195,9 @@ class GravityDelegate {
         return null;
     }
 
+    @Nullable
     private View findEndView(RecyclerView.LayoutManager layoutManager,
-                             OrientationHelper helper) {
+                             @NonNull OrientationHelper helper) {
 
         if (layoutManager instanceof LinearLayoutManager) {
             int lastChild = ((LinearLayoutManager) layoutManager).findLastVisibleItemPosition();
@@ -246,7 +242,7 @@ class GravityDelegate {
         return null;
     }
 
-    int getSnappedPosition(RecyclerView recyclerView) {
+    private int getSnappedPosition(@NonNull RecyclerView recyclerView) {
         RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
 
         if (layoutManager instanceof LinearLayoutManager) {

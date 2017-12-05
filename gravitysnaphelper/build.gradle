@@ -12,7 +12,7 @@ android {
 }
 
 dependencies {
-    implementation "com.android.support:recyclerview-v7:$rootProject.ext.supportLibVersion"
+    api "com.android.support:recyclerview-v7:$rootProject.ext.supportLibVersion"
 }
 
 apply from: rootProject.file('gradle/gradle-mvn-push.gradle')

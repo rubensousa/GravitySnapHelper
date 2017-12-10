@@ -9,8 +9,11 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
+
+import java.util.Locale;
 
 class GravityDelegate {
 
@@ -18,7 +21,6 @@ class GravityDelegate {
     private OrientationHelper horizontalHelper;
     private int gravity;
     private boolean isRtlHorizontal;
-    private boolean wasRtl;
     private boolean snapLastItem;
     private GravitySnapHelper.SnapListener listener;
     private boolean snapping;
@@ -55,8 +57,7 @@ class GravityDelegate {
         if (recyclerView != null) {
             recyclerView.setOnFlingListener(null);
             if ((gravity == Gravity.START || gravity == Gravity.END)) {
-                isRtlHorizontal = isRtl(recyclerView);
-                wasRtl = isRtlHorizontal;
+                isRtlHorizontal = isRtl();
             }
             if (listener != null) {
                 recyclerView.addOnScrollListener(mScrollListener);
@@ -64,11 +65,12 @@ class GravityDelegate {
         }
     }
 
-    private boolean isRtl(@NonNull View view) {
+    private boolean isRtl() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             return false;
         }
-        return ViewCompat.getLayoutDirection(view) == View.LAYOUT_DIRECTION_RTL;
+        return TextUtils.getLayoutDirectionFromLocale(Locale.getDefault())
+                == View.LAYOUT_DIRECTION_RTL;
     }
 
     @NonNull

@@ -205,7 +205,8 @@ class GravityDelegate {
             } else {
                 // If the child wasn't returned, we need to return
                 // the next view close to the start.
-                return layoutManager.findViewByPosition(firstChild + offset);
+                return reverseLayout ? layoutManager.findViewByPosition(firstChild - offset)
+                        : layoutManager.findViewByPosition(firstChild + offset);
             }
         }
 
@@ -263,7 +264,8 @@ class GravityDelegate {
                 return null;
             } else {
                 // If the child wasn't returned, we need to return the previous view
-                return layoutManager.findViewByPosition(lastChild - offset);
+                return reverseLayout ? layoutManager.findViewByPosition(lastChild + offset)
+                        : layoutManager.findViewByPosition(lastChild - offset);
             }
         }
         return null;

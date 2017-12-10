@@ -82,7 +82,7 @@ public class SnapAdapter extends RecyclerView.Adapter<SnapAdapter.ViewHolder> im
 
         if (snap.getGravity() == Gravity.START || snap.getGravity() == Gravity.END) {
             holder.recyclerView.setLayoutManager(new LinearLayoutManager(holder
-                    .recyclerView.getContext(), LinearLayoutManager.HORIZONTAL, false));
+                    .recyclerView.getContext(), LinearLayoutManager.HORIZONTAL, true));
             new GravitySnapHelper(snap.getGravity(), false, this).attachToRecyclerView(holder.recyclerView);
         } else if (snap.getGravity() == Gravity.CENTER_HORIZONTAL ||
                 snap.getGravity() == Gravity.CENTER_VERTICAL) {

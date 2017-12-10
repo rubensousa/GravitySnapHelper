@@ -4,6 +4,7 @@ package com.github.rubensousa.gravitysnaphelper;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
@@ -17,6 +18,7 @@ class GravityDelegate {
     private OrientationHelper horizontalHelper;
     private int gravity;
     private boolean isRtlHorizontal;
+    private boolean wasRtl;
     private boolean snapLastItem;
     private GravitySnapHelper.SnapListener listener;
     private boolean snapping;
@@ -52,16 +54,21 @@ class GravityDelegate {
     public void attachToRecyclerView(@Nullable RecyclerView recyclerView) {
         if (recyclerView != null) {
             recyclerView.setOnFlingListener(null);
-            if ((gravity == Gravity.START || gravity == Gravity.END)
-                    && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                isRtlHorizontal
-                        = recyclerView.getContext().getResources().getConfiguration()
-                        .getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+            if ((gravity == Gravity.START || gravity == Gravity.END)) {
+                isRtlHorizontal = isRtl(recyclerView);
+                wasRtl = isRtlHorizontal;
             }
             if (listener != null) {
                 recyclerView.addOnScrollListener(mScrollListener);
             }
         }
+    }
+
+    private boolean isRtl(@NonNull View view) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            return false;
+        }
+        return ViewCompat.getLayoutDirection(view) == View.LAYOUT_DIRECTION_RTL;
     }
 
     @NonNull
@@ -147,7 +154,10 @@ class GravityDelegate {
                                @NonNull OrientationHelper helper) {
 
         if (layoutManager instanceof LinearLayoutManager) {
-            int firstChild = ((LinearLayoutManager) layoutManager).findFirstVisibleItemPosition();
+            LinearLayoutManager linearLayoutManager = (LinearLayoutManager) layoutManager;
+            boolean reverseLayout = linearLayoutManager.getReverseLayout();
+            int firstChild = reverseLayout ? linearLayoutManager.findLastVisibleItemPosition()
+                    : linearLayoutManager.findFirstVisibleItemPosition();
             int offset = 1;
 
             if (layoutManager instanceof GridLayoutManager) {
@@ -175,9 +185,16 @@ class GravityDelegate {
 
             // If we're at the end of the list, we shouldn't snap
             // to avoid having the last item not completely visible.
-            boolean endOfList = ((LinearLayoutManager) layoutManager)
-                    .findLastCompletelyVisibleItemPosition()
-                    == layoutManager.getItemCount() - 1;
+            boolean endOfList;
+            if (!reverseLayout) {
+                endOfList = ((LinearLayoutManager) layoutManager)
+                        .findLastCompletelyVisibleItemPosition()
+                        == layoutManager.getItemCount() - 1;
+            } else {
+                endOfList = ((LinearLayoutManager) layoutManager)
+                        .findFirstCompletelyVisibleItemPosition()
+                        == 0;
+            }
 
             if (visibleWidth > 0.5f && !endOfList) {
                 return child;
@@ -200,7 +217,10 @@ class GravityDelegate {
                              @NonNull OrientationHelper helper) {
 
         if (layoutManager instanceof LinearLayoutManager) {
-            int lastChild = ((LinearLayoutManager) layoutManager).findLastVisibleItemPosition();
+            LinearLayoutManager linearLayoutManager = (LinearLayoutManager) layoutManager;
+            boolean reverseLayout = linearLayoutManager.getReverseLayout();
+            int lastChild = reverseLayout ? linearLayoutManager.findFirstVisibleItemPosition()
+                    : linearLayoutManager.findLastVisibleItemPosition();
             int offset = 1;
 
             if (layoutManager instanceof GridLayoutManager) {
@@ -225,8 +245,15 @@ class GravityDelegate {
 
             // If we're at the start of the list, we shouldn't snap
             // to avoid having the first item not completely visible.
-            boolean startOfList = ((LinearLayoutManager) layoutManager)
-                    .findFirstCompletelyVisibleItemPosition() == 0;
+            boolean startOfList;
+            if (!reverseLayout) {
+                startOfList = ((LinearLayoutManager) layoutManager)
+                        .findFirstCompletelyVisibleItemPosition() == 0;
+            } else {
+                startOfList = ((LinearLayoutManager) layoutManager)
+                        .findLastCompletelyVisibleItemPosition()
+                        == layoutManager.getItemCount() - 1;
+            }
 
             if (visibleWidth > 0.5f && !startOfList) {
                 return child;

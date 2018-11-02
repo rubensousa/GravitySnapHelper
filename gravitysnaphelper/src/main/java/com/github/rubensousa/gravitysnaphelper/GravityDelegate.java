@@ -4,7 +4,6 @@ package com.github.rubensousa.gravitysnaphelper;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
@@ -160,11 +159,6 @@ class GravityDelegate {
             boolean reverseLayout = linearLayoutManager.getReverseLayout();
             int firstChild = reverseLayout ? linearLayoutManager.findLastVisibleItemPosition()
                     : linearLayoutManager.findFirstVisibleItemPosition();
-            int offset = 1;
-
-            if (layoutManager instanceof GridLayoutManager) {
-                offset += ((GridLayoutManager) layoutManager).getSpanCount() - 1;
-            }
 
             if (firstChild == RecyclerView.NO_POSITION) {
                 return null;
@@ -207,8 +201,8 @@ class GravityDelegate {
             } else {
                 // If the child wasn't returned, we need to return
                 // the next view close to the start.
-                return reverseLayout ? layoutManager.findViewByPosition(firstChild - offset)
-                        : layoutManager.findViewByPosition(firstChild + offset);
+                return reverseLayout ? findPreviousView(firstChild, layoutManager)
+                        : findNextView(firstChild, layoutManager);
             }
         }
 
@@ -224,11 +218,6 @@ class GravityDelegate {
             boolean reverseLayout = linearLayoutManager.getReverseLayout();
             int lastChild = reverseLayout ? linearLayoutManager.findFirstVisibleItemPosition()
                     : linearLayoutManager.findLastVisibleItemPosition();
-            int offset = 1;
-
-            if (layoutManager instanceof GridLayoutManager) {
-                offset += ((GridLayoutManager) layoutManager).getSpanCount() - 1;
-            }
 
             if (lastChild == RecyclerView.NO_POSITION) {
                 return null;
@@ -266,8 +255,8 @@ class GravityDelegate {
                 return null;
             } else {
                 // If the child wasn't returned, we need to return the previous view
-                return reverseLayout ? layoutManager.findViewByPosition(lastChild + offset)
-                        : layoutManager.findViewByPosition(lastChild - offset);
+                return reverseLayout ? findNextView(lastChild, layoutManager)
+                        : findPreviousView(lastChild, layoutManager);
             }
         }
         return null;
@@ -299,5 +288,55 @@ class GravityDelegate {
             horizontalHelper = OrientationHelper.createHorizontalHelper(layoutManager);
         }
         return horizontalHelper;
+    }
+
+    @Nullable
+    private View findNextView(int currentViewPosition, RecyclerView.LayoutManager layoutManager) {
+        if (layoutManager instanceof GridLayoutManager) {
+            final GridLayoutManager gridLayoutManager = (GridLayoutManager) layoutManager;
+            final GridLayoutManager.SpanSizeLookup spanLookup = gridLayoutManager.getSpanSizeLookup();
+            if (spanLookup == null || spanLookup instanceof GridLayoutManager.DefaultSpanSizeLookup) {
+                return layoutManager.findViewByPosition(currentViewPosition + gridLayoutManager.getSpanCount());
+            } else {
+                final View currentView = layoutManager.findViewByPosition(currentViewPosition);
+                for (int i = 1; i < layoutManager.getChildCount(); ++i) {
+                    final View possiblyNextView = layoutManager.findViewByPosition(currentViewPosition + i);
+                    if (possiblyNextView == null) {
+                        break;
+                    }
+                    if (gridLayoutManager.getOrientation() == LinearLayoutManager.HORIZONTAL && possiblyNextView.getLeft() > currentView.getRight()
+                            || gridLayoutManager.getOrientation() == LinearLayoutManager.VERTICAL && possiblyNextView.getTop() > currentView.getBottom()) {
+                        return possiblyNextView;
+                    }
+                }
+            }
+        }
+
+        return layoutManager.findViewByPosition(currentViewPosition + 1);
+    }
+
+    @Nullable
+    private View findPreviousView(int currentViewPosition, RecyclerView.LayoutManager layoutManager) {
+        if (layoutManager instanceof GridLayoutManager) {
+            final GridLayoutManager gridLayoutManager = (GridLayoutManager) layoutManager;
+            final GridLayoutManager.SpanSizeLookup spanLookup = gridLayoutManager.getSpanSizeLookup();
+            if (spanLookup == null || spanLookup instanceof GridLayoutManager.DefaultSpanSizeLookup) {
+                return layoutManager.findViewByPosition(currentViewPosition - gridLayoutManager.getSpanCount());
+            } else {
+                final View currentView = layoutManager.findViewByPosition(currentViewPosition);
+                for (int i = 1; i < layoutManager.getChildCount(); ++i) {
+                    final View possiblyPreviousView = layoutManager.findViewByPosition(currentViewPosition - i);
+                    if (possiblyPreviousView == null) {
+                        break;
+                    }
+                    if (gridLayoutManager.getOrientation() == LinearLayoutManager.HORIZONTAL && possiblyPreviousView.getRight() < currentView.getLeft()
+                            || gridLayoutManager.getOrientation() == LinearLayoutManager.VERTICAL && possiblyPreviousView.getBottom() < currentView.getTop()) {
+                        return possiblyPreviousView;
+                    }
+                }
+            }
+        }
+
+        return layoutManager.findViewByPosition(currentViewPosition - 1);
     }
 }

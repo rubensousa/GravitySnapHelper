@@ -1,10 +1,10 @@
 package com.github.rubensousa.recyclerviewsnap;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.Gravity;
 
 import com.github.rubensousa.gravitysnaphelper.GravitySnapHelper;
@@ -26,7 +26,7 @@ public class GridActivity extends AppCompatActivity {
         Adapter adapter = new Adapter(false, false, getApps());
 
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2,
-                LinearLayoutManager.VERTICAL, true));
+                RecyclerView.VERTICAL, true));
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setAdapter(adapter);
         new GravitySnapHelper(Gravity.TOP).attachToRecyclerView(mRecyclerView);

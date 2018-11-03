@@ -277,10 +277,13 @@ class GravityDelegate {
         RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
 
         if (layoutManager instanceof LinearLayoutManager) {
+            LinearLayoutManager linearLayoutManager = (LinearLayoutManager)layoutManager;
             if (gravity == Gravity.START || gravity == Gravity.TOP) {
-                return ((LinearLayoutManager) layoutManager).findFirstCompletelyVisibleItemPosition();
+                int pos = linearLayoutManager.findFirstCompletelyVisibleItemPosition();
+                return (pos != RecyclerView.NO_POSITION) ? pos : linearLayoutManager.findFirstVisibleItemPosition();
             } else if (gravity == Gravity.END || gravity == Gravity.BOTTOM) {
-                return ((LinearLayoutManager) layoutManager).findLastCompletelyVisibleItemPosition();
+                int pos = linearLayoutManager.findLastCompletelyVisibleItemPosition();
+                return (pos != RecyclerView.NO_POSITION) ? pos : linearLayoutManager.findLastVisibleItemPosition();
             }
         }
 

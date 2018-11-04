@@ -185,7 +185,8 @@ class GravityDelegate {
             if (!isRtl) {
                 currentViewDistance = Math.abs(helper.getDecoratedStart(currentView));
             } else {
-                currentViewDistance = Math.abs(helper.getDecoratedEnd(currentView));
+                currentViewDistance = Math.abs(helper.getDecoratedEnd(currentView)
+                        - helper.getEnd());
             }
             if (currentViewDistance < distanceToStart) {
                 distanceToStart = currentViewDistance;

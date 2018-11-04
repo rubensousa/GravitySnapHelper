@@ -155,13 +155,13 @@ class GravityDelegate {
         // Check if we have padding so that the last view stays in the correct position
         if (pos == lm.getItemCount() - 1 && !recyclerView.getClipToPadding()) {
             int childEnd = helper.getDecoratedEnd(targetView);
-            if (childEnd >= helper.getTotalSpace() / 2 + helper.getEndAfterPadding() / 2) {
-                distance = childEnd - helper.getEndAfterPadding();
+            if (childEnd >= helper.getEnd() - (helper.getEnd() - helper.getEndAfterPadding()) / 2) {
+                distance = helper.getDecoratedEnd(targetView) - helper.getEnd();
             } else {
-                distance = helper.getEnd() - childEnd;
+                distance = childEnd - helper.getEndAfterPadding();
             }
         } else {
-            distance = helper.getDecoratedEnd(targetView) - helper.getEndAfterPadding();
+            distance = helper.getDecoratedEnd(targetView) - helper.getEnd();
         }
         return distance;
     }
@@ -212,8 +212,8 @@ class GravityDelegate {
             View currentView = lm.getChildAt(i);
             int currentViewDistance;
             if (!isRtl) {
-                currentViewDistance = Math.abs(helper.getTotalSpace()
-                        - helper.getDecoratedEnd(currentView));
+                currentViewDistance = Math.abs(helper.getDecoratedEnd(currentView)
+                        - helper.getEnd());
             } else {
                 currentViewDistance = Math.abs(helper.getDecoratedStart(currentView));
             }

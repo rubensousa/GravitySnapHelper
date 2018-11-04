@@ -71,7 +71,7 @@ public class SnapAdapter extends RecyclerView.Adapter<SnapAdapter.ViewHolder> im
             if (snap.getGravity() == Gravity.START) {
                 holder.recyclerView.setPadding(padding, 0, 0, 0);
             } else if (snap.getGravity() == Gravity.END) {
-                holder.recyclerView.setPadding(0, 0, padding, 0);
+                holder.recyclerView.setPadding(padding, 0, padding, 0);
             }
         } else {
             holder.recyclerView.setPadding(0, 0, 0, 0);

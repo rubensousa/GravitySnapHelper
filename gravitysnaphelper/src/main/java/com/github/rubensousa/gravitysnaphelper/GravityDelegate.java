@@ -78,7 +78,7 @@ class GravityDelegate {
 
         if (layoutManager.canScrollHorizontally()) {
             if ((isRtl && gravity == Gravity.END) || (!isRtl && gravity == Gravity.START)) {
-                out[0] = distanceToStart(targetView, getHorizontalHelper(layoutManager));
+                out[0] = distanceToStart(targetView, layoutManager, getHorizontalHelper(layoutManager));
             } else {
                 out[0] = distanceToEnd(targetView, layoutManager, getHorizontalHelper(layoutManager));
             }
@@ -88,7 +88,7 @@ class GravityDelegate {
 
         if (layoutManager.canScrollVertically()) {
             if (gravity == Gravity.TOP) {
-                out[1] = distanceToStart(targetView, getVerticalHelper(layoutManager));
+                out[1] = distanceToStart(targetView, layoutManager, getVerticalHelper(layoutManager));
             } else { // BOTTOM
                 out[1] = distanceToEnd(targetView, layoutManager, getVerticalHelper(layoutManager));
             }
@@ -131,11 +131,13 @@ class GravityDelegate {
         snapLastItem = snap;
     }
 
-    private int distanceToStart(View targetView, @NonNull OrientationHelper helper) {
+    private int distanceToStart(View targetView, RecyclerView.LayoutManager lm,
+                                @NonNull OrientationHelper helper) {
         int pos = recyclerView.getChildLayoutPosition(targetView);
         int distance;
         // Check if we have padding so that the first view stays in the correct position
-        if (pos == 0 && !recyclerView.getClipToPadding()) {
+        if ((pos == 0 && !isRtl || pos == lm.getItemCount() - 1 && isRtl)
+                && !recyclerView.getClipToPadding()) {
             int childStart = helper.getDecoratedStart(targetView);
             if (childStart >= helper.getStartAfterPadding() / 2) {
                 distance = childStart - helper.getStartAfterPadding();
@@ -153,7 +155,8 @@ class GravityDelegate {
         int pos = recyclerView.getChildLayoutPosition(targetView);
         int distance;
         // Check if we have padding so that the last view stays in the correct position
-        if (pos == lm.getItemCount() - 1 && !recyclerView.getClipToPadding()) {
+        if ((pos == 0 && isRtl || pos == lm.getItemCount() - 1 && !isRtl)
+                && !recyclerView.getClipToPadding()) {
             int childEnd = helper.getDecoratedEnd(targetView);
             if (childEnd >= helper.getEnd() - (helper.getEnd() - helper.getEndAfterPadding()) / 2) {
                 distance = helper.getDecoratedEnd(targetView) - helper.getEnd();

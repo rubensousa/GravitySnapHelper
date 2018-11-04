@@ -69,7 +69,7 @@ public class SnapAdapter extends RecyclerView.Adapter<SnapAdapter.ViewHolder> im
         int padding = holder.recyclerView.getResources().getDimensionPixelOffset(R.dimen.extra_padding);
         if (snap.getPadding()) {
             if (snap.getGravity() == Gravity.START) {
-                holder.recyclerView.setPadding(padding, 0, 0, 0);
+                holder.recyclerView.setPadding(padding, 0, padding, 0);
             } else if (snap.getGravity() == Gravity.END) {
                 holder.recyclerView.setPadding(padding, 0, padding, 0);
             }

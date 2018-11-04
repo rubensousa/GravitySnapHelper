@@ -1,8 +1,6 @@
 package com.github.rubensousa.gravitysnaphelper;
 
 
-import android.os.Build;
-import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 
@@ -10,6 +8,8 @@ import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.text.TextUtilsCompat;
+import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.OrientationHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -53,22 +53,15 @@ class GravityDelegate {
     public void attachToRecyclerView(@Nullable RecyclerView recyclerView) {
         if (recyclerView != null) {
             recyclerView.setOnFlingListener(null);
-            if ((gravity == Gravity.START || gravity == Gravity.END)) {
-                isRtl = isRtl();
+            if (gravity == Gravity.START || gravity == Gravity.END) {
+                isRtl = TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault())
+                        == ViewCompat.LAYOUT_DIRECTION_RTL;
             }
             if (listener != null) {
                 recyclerView.addOnScrollListener(scrollListener);
             }
             this.recyclerView = recyclerView;
         }
-    }
-
-    private boolean isRtl() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            return false;
-        }
-        return TextUtils.getLayoutDirectionFromLocale(Locale.getDefault())
-                == View.LAYOUT_DIRECTION_RTL;
     }
 
     @NonNull

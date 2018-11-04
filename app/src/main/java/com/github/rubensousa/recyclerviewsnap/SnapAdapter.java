@@ -4,7 +4,6 @@ package com.github.rubensousa.recyclerviewsnap;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -24,14 +23,6 @@ public class SnapAdapter extends RecyclerView.Adapter<SnapAdapter.ViewHolder> im
     public static final int HORIZONTAL = 1;
 
     private ArrayList<Snap> mSnaps;
-    // Disable touch detection for parent recyclerView if we use vertical nested recyclerViews
-    private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            v.getParent().requestDisallowInterceptTouchEvent(true);
-            return false;
-        }
-    };
 
     public SnapAdapter() {
         mSnaps = new ArrayList<>();
@@ -67,11 +58,6 @@ public class SnapAdapter extends RecyclerView.Adapter<SnapAdapter.ViewHolder> im
                 .inflate(R.layout.adapter_snap_vertical, parent, false)
                 : LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.adapter_snap, parent, false);
-
-        if (viewType == VERTICAL) {
-            view.findViewById(R.id.recyclerView).setOnTouchListener(mTouchListener);
-        }
-
         return new ViewHolder(view);
 
     }
@@ -80,6 +66,16 @@ public class SnapAdapter extends RecyclerView.Adapter<SnapAdapter.ViewHolder> im
     public void onBindViewHolder(ViewHolder holder, int position) {
         Snap snap = mSnaps.get(position);
         holder.snapTextView.setText(snap.getText());
+        int padding = holder.recyclerView.getResources().getDimensionPixelOffset(R.dimen.extra_padding);
+        if (snap.getPadding()) {
+            if (snap.getGravity() == Gravity.START) {
+                holder.recyclerView.setPadding(padding, 0, 0, 0);
+            } else if (snap.getGravity() == Gravity.END) {
+                holder.recyclerView.setPadding(0, 0, padding, 0);
+            }
+        } else {
+            holder.recyclerView.setPadding(0, 0, 0, 0);
+        }
 
         if (snap.getGravity() == Gravity.START || snap.getGravity() == Gravity.END) {
             holder.recyclerView.setLayoutManager(new LinearLayoutManager(holder
@@ -125,8 +121,8 @@ public class SnapAdapter extends RecyclerView.Adapter<SnapAdapter.ViewHolder> im
 
         public ViewHolder(View itemView) {
             super(itemView);
-            snapTextView = (TextView) itemView.findViewById(R.id.snapTextView);
-            recyclerView = (RecyclerView) itemView.findViewById(R.id.recyclerView);
+            snapTextView = itemView.findViewById(R.id.snapTextView);
+            recyclerView = itemView.findViewById(R.id.recyclerView);
         }
 
     }

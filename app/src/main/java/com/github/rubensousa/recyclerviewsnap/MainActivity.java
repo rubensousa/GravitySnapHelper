@@ -1,12 +1,7 @@
 package com.github.rubensousa.recyclerviewsnap;
 
 import android.content.Intent;
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -15,6 +10,11 @@ import com.github.rubensousa.gravitysnaphelper.GravitySnapHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class MainActivity extends AppCompatActivity implements Toolbar.OnMenuItemClickListener {
 
@@ -55,10 +55,12 @@ public class MainActivity extends AppCompatActivity implements Toolbar.OnMenuIte
 
         SnapAdapter snapAdapter = new SnapAdapter();
         if (mHorizontal) {
-            snapAdapter.addSnap(new Snap(Gravity.CENTER_HORIZONTAL, "Snap center", apps));
-            snapAdapter.addSnap(new Snap(Gravity.START, "Snap start", apps));
-            snapAdapter.addSnap(new Snap(Gravity.END, "Snap end", apps));
-            snapAdapter.addSnap(new Snap(Gravity.CENTER, "GravityPager snap", apps));
+            snapAdapter.addSnap(new Snap(Gravity.CENTER_HORIZONTAL, "Snap center", false, apps));
+            snapAdapter.addSnap(new Snap(Gravity.START, "Snap start", false, apps));
+            snapAdapter.addSnap(new Snap(Gravity.START, "Snap start with padding", true, apps));
+            snapAdapter.addSnap(new Snap(Gravity.END, "Snap end", false, apps));
+            snapAdapter.addSnap(new Snap(Gravity.END, "Snap end with padding", true, apps));
+            snapAdapter.addSnap(new Snap(Gravity.CENTER, "GravityPager snap", false, apps));
             mRecyclerView.setAdapter(snapAdapter);
         } else {
             Adapter adapter = new Adapter(false, false, apps);

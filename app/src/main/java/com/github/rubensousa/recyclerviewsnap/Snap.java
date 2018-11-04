@@ -5,26 +5,32 @@ import java.util.List;
 
 public class Snap {
 
-    private int mGravity;
-    private String mText;
-    private List<App> mApps;
+    private boolean padding;
+    private int gravity;
+    private String text;
+    private List<App> apps;
 
-    public Snap(int gravity, String text, List<App> apps) {
-        mGravity = gravity;
-        mText = text;
-        mApps = apps;
+    public Snap(int gravity, String text, boolean padding, List<App> apps) {
+        this.gravity = gravity;
+        this.text = text;
+        this.apps = apps;
+        this.padding = padding;
     }
 
-    public String getText(){
-        return mText;
+    public boolean getPadding() {
+        return padding;
     }
 
-    public int getGravity(){
-        return mGravity;
+    public String getText() {
+        return text;
     }
 
-    public List<App> getApps(){
-        return mApps;
+    public int getGravity() {
+        return gravity;
+    }
+
+    public List<App> getApps() {
+        return apps;
     }
 
 }

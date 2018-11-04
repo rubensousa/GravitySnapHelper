@@ -182,6 +182,7 @@ class GravityDelegate {
 
         int distanceToStart = Integer.MAX_VALUE;
 
+        // TODO Optimize. We only need to check the first/last 2 views for each scenario.
         for (int i = 0; i < lm.getChildCount(); i++) {
             View currentView = lm.getChildAt(i);
             int currentViewDistance;

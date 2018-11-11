@@ -11,16 +11,15 @@ If you need snapping support to start, top, end or bottom, use GravitySnapHelper
 Add this to your build.gradle:
 
 ```groovy
-implementation 'com.github.rubensousa:gravitysnaphelper:1.5'
+implementation 'com.github.rubensousa:gravitysnaphelper:2.0'
 ```
 
-Otherwise, center snapping is done with LinearSnapHelper (part of the recyclerview-v7 package).
+Otherwise, center snapping is done with LinearSnapHelper.
 
 ### Snapping center:
 
 ```java
-SnapHelper snapHelper = new LinearSnapHelper();
-snapHelper.attachToRecyclerView(recyclerView);
+new LinearSnapHelper().attachToRecyclerView(recyclerView);
 ```
 
 ### Snapping start with GravitySnapHelper:
@@ -29,8 +28,7 @@ snapHelper.attachToRecyclerView(recyclerView);
 startRecyclerView.setLayoutManager(new LinearLayoutManager(this,
                 LinearLayoutManager.HORIZONTAL, false));
                 
-SnapHelper snapHelperStart = new GravitySnapHelper(Gravity.START);
-snapHelperStart.attachToRecyclerView(startRecyclerView);
+new GravitySnapHelper(Gravity.START).attachToRecyclerView(startRecyclerView);
 ```
 
 ### Snapping top with GravitySnapHelper:
@@ -38,14 +36,13 @@ snapHelperStart.attachToRecyclerView(startRecyclerView);
 ```java
 topRecyclerView.setLayoutManager(new LinearLayoutManager(this));
                 
-SnapHelper snapHelperTop = new GravitySnapHelper(Gravity.TOP);
-snapHelperTop.attachToRecyclerView(topRecyclerView);
+new GravitySnapHelper(Gravity.TOP).attachToRecyclerView(topRecyclerView);
 ```
 
 ## License
 
-    Copyright 2016 The Android Open Source Project
-    Copyright 2016 Rúben Sousa
+    Copyright 2018 The Android Open Source Project
+    Copyright 2018 Rúben Sousa
     
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

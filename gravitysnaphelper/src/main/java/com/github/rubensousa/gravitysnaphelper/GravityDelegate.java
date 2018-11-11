@@ -199,10 +199,9 @@ class GravityDelegate {
                               @NonNull OrientationHelper helper) {
         int pos = recyclerView.getChildLayoutPosition(targetView);
         int distance;
-        /**
-         * The last position or the first position
-         * (when there's a reverse layout or we're on RTL mode) must collapse to the padding edge.
-         */
+
+        // The last position or the first position
+        // (when there's a reverse layout or we're on RTL mode) must collapse to the padding edge.
         if ((pos == 0 && (isRtl || lm.getReverseLayout())
                 || pos == lm.getItemCount() - 1 && (!isRtl || lm.getReverseLayout()))
                 && !recyclerView.getClipToPadding()) {

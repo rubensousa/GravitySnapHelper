@@ -80,6 +80,36 @@ class GravityDelegate {
         }
     }
 
+    public void smoothScrollToPosition(int position) {
+        scrollTo(position, true);
+    }
+
+    public void scrollToPosition(int position) {
+        scrollTo(position, false);
+    }
+
+    private void scrollTo(int position, boolean smooth) {
+        if (recyclerView.getLayoutManager() != null) {
+            RecyclerView.ViewHolder viewHolder
+                    = recyclerView.findViewHolderForAdapterPosition(position);
+            if (viewHolder != null) {
+                int[] distances = calculateDistanceToFinalSnap(recyclerView.getLayoutManager(),
+                        viewHolder.itemView);
+                if (smooth) {
+                    recyclerView.smoothScrollBy(distances[0], distances[1]);
+                } else {
+                    recyclerView.scrollBy(distances[0], distances[1]);
+                }
+            } else {
+                if (smooth) {
+                    recyclerView.smoothScrollToPosition(position);
+                } else {
+                    recyclerView.scrollToPosition(position);
+                }
+            }
+        }
+    }
+
     @NonNull
     public int[] calculateDistanceToFinalSnap(@NonNull RecyclerView.LayoutManager layoutManager,
                                               @NonNull View targetView) {

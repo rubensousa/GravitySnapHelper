@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.github.rubensousa.gravitysnaphelper.GravityPagerSnapHelper;
 import com.github.rubensousa.gravitysnaphelper.GravitySnapHelper;
+import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
 
@@ -22,19 +23,19 @@ public class SnapAdapter extends RecyclerView.Adapter<SnapAdapter.ViewHolder> im
     public static final int VERTICAL = 0;
     public static final int HORIZONTAL = 1;
 
-    private ArrayList<Snap> mSnaps;
+    private ArrayList<Snap> snaps;
 
     public SnapAdapter() {
-        mSnaps = new ArrayList<>();
+        snaps = new ArrayList<>();
     }
 
     public void addSnap(Snap snap) {
-        mSnaps.add(snap);
+        snaps.add(snap);
     }
 
     @Override
     public int getItemViewType(int position) {
-        Snap snap = mSnaps.get(position);
+        Snap snap = snaps.get(position);
         switch (snap.getGravity()) {
             case Gravity.CENTER_VERTICAL:
                 return VERTICAL;
@@ -64,8 +65,8 @@ public class SnapAdapter extends RecyclerView.Adapter<SnapAdapter.ViewHolder> im
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Snap snap = mSnaps.get(position);
-        holder.snapTextView.setText(snap.getText());
+        holder.bind(snaps.get(position));
+        Snap snap = snaps.get(position);
         int padding = holder.recyclerView.getResources().getDimensionPixelOffset(R.dimen.extra_padding);
         if (snap.getPadding()) {
             if (snap.getGravity() == Gravity.START) {
@@ -106,7 +107,7 @@ public class SnapAdapter extends RecyclerView.Adapter<SnapAdapter.ViewHolder> im
 
     @Override
     public int getItemCount() {
-        return mSnaps.size();
+        return snaps.size();
     }
 
     @Override
@@ -114,17 +115,48 @@ public class SnapAdapter extends RecyclerView.Adapter<SnapAdapter.ViewHolder> im
         Log.d("Snapped: ", position + "");
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public TextView snapTextView;
         public RecyclerView recyclerView;
+        public MaterialButton scrollButton;
+        private Snap snap;
 
         public ViewHolder(View itemView) {
             super(itemView);
             snapTextView = itemView.findViewById(R.id.snapTextView);
             recyclerView = itemView.findViewById(R.id.recyclerView);
+            scrollButton = itemView.findViewById(R.id.scrollButton);
+            scrollButton.setOnClickListener(this);
         }
 
+        public void bind(Snap snap) {
+            this.snap = snap;
+            if ((snap.getGravity() == Gravity.START || snap.getGravity() == Gravity.END)
+                    && !snap.getPadding()) {
+                scrollButton.setVisibility(View.VISIBLE);
+            } else {
+                scrollButton.setVisibility(View.INVISIBLE);
+            }
+            snapTextView.setText(snap.getText());
+        }
+
+        @Override
+        public void onClick(View v) {
+            RecyclerView.OnFlingListener listener = recyclerView.getOnFlingListener();
+            RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
+            if (listener instanceof GravitySnapHelper
+                    && layoutManager instanceof LinearLayoutManager) {
+                LinearLayoutManager lm = (LinearLayoutManager) layoutManager;
+                int firstVisiblePosition = snap.getGravity() == Gravity.START ?
+                        lm.findFirstCompletelyVisibleItemPosition()
+                        : lm.findLastCompletelyVisibleItemPosition();
+                if (firstVisiblePosition != RecyclerView.NO_POSITION) {
+                    ((GravitySnapHelper) listener).smoothScrollToPosition(
+                            firstVisiblePosition + 1);
+                }
+            }
+        }
     }
 }
 

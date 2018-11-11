@@ -16,16 +16,18 @@
 
 package com.github.rubensousa.gravitysnaphelper;
 
+import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
-import android.view.View;
 
 
 public class GravitySnapHelper extends LinearSnapHelper {
 
-    @NonNull private final GravityDelegate delegate;
+    @NonNull
+    private final GravityDelegate delegate;
 
     public GravitySnapHelper(int gravity) {
         this(gravity, false, null);
@@ -67,6 +69,14 @@ public class GravitySnapHelper extends LinearSnapHelper {
      */
     public void enableLastItemSnap(boolean snap) {
         delegate.enableLastItemSnap(snap);
+    }
+
+    public void smoothScrollToPosition(int position) {
+        delegate.smoothScrollToPosition(position);
+    }
+
+    public void scrollToPosition(int position) {
+        delegate.scrollToPosition(position);
     }
 
     public interface SnapListener {

@@ -80,4 +80,13 @@ public class GravityPagerSnapHelper extends PagerSnapHelper {
     public void enableLastItemSnap(boolean snap) {
         delegate.enableLastItemSnap(snap);
     }
+
+    public void smoothScrollToPosition(int position) {
+        delegate.smoothScrollToPosition(position);
+    }
+
+    public void scrollToPosition(int position) {
+        delegate.scrollToPosition(position);
+    }
+
 }

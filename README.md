@@ -39,6 +39,10 @@ topRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 new GravitySnapHelper(Gravity.TOP).attachToRecyclerView(topRecyclerView);
 ```
 
+### If you're using nested RecyclerViews, take a look at:
+
+https://github.com/rubensousa/RecyclerViewSnap/blob/master/gravitysnaphelper/src/main/java/com/github/rubensousa/gravitysnaphelper/OrientationAwareRecyclerView.java
+
 ## License
 
     Copyright 2018 The Android Open Source Project

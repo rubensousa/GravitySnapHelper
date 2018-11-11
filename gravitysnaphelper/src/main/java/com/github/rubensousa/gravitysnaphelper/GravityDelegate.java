@@ -107,16 +107,16 @@ class GravityDelegate {
         LinearLayoutManager lm = (LinearLayoutManager) layoutManager;
         switch (gravity) {
             case Gravity.START:
-                snapView = findStartView(lm, getHorizontalHelper(lm));
+                snapView = findEdgeView(lm, getHorizontalHelper(lm), true);
                 break;
             case Gravity.END:
-                snapView = findEndView(lm, getHorizontalHelper(lm));
+                snapView = findEdgeView(lm, getHorizontalHelper(lm), false);
                 break;
             case Gravity.TOP:
-                snapView = findStartView(lm, getVerticalHelper(lm));
+                snapView = findEdgeView(lm, getVerticalHelper(lm), true);
                 break;
             case Gravity.BOTTOM:
-                snapView = findEndView(lm, getVerticalHelper(lm));
+                snapView = findEdgeView(lm, getVerticalHelper(lm), false);
                 break;
         }
         snapping = snapView != null;
@@ -134,7 +134,7 @@ class GravityDelegate {
                                 @NonNull OrientationHelper helper) {
         int pos = recyclerView.getChildLayoutPosition(targetView);
         int distance;
-        if ((pos == 0 && (!isRtl && !lm.getReverseLayout())
+        if ((pos == 0 && (!isRtl || lm.getReverseLayout())
                 || pos == lm.getItemCount() - 1 && (isRtl || lm.getReverseLayout()))
                 && !recyclerView.getClipToPadding()) {
             int childStart = helper.getDecoratedStart(targetView);
@@ -158,7 +158,7 @@ class GravityDelegate {
          * (when there's a reverse layout or we're on RTL mode) must collapse to the padding edge.
          */
         if ((pos == 0 && (isRtl || lm.getReverseLayout())
-                || pos == lm.getItemCount() - 1 && (!isRtl && !lm.getReverseLayout()))
+                || pos == lm.getItemCount() - 1 && (!isRtl || lm.getReverseLayout()))
                 && !recyclerView.getClipToPadding()) {
             int childEnd = helper.getDecoratedEnd(targetView);
             if (childEnd >= helper.getEnd() - (helper.getEnd() - helper.getEndAfterPadding()) / 2) {
@@ -180,25 +180,9 @@ class GravityDelegate {
      * @return the first view in the LayoutManager to snap to
      */
     @Nullable
-    private View findStartView(LinearLayoutManager lm, @NonNull OrientationHelper helper) {
-        View startView = null;
-
-        int distanceToStart = Integer.MAX_VALUE;
-
-        // TODO Optimize. We only need to check the first/last 2 views for each scenario.
-        for (int i = 0; i < lm.getChildCount(); i++) {
-            View currentView = lm.getChildAt(i);
-            int currentViewDistance;
-            if (!isRtl) {
-                currentViewDistance = Math.abs(helper.getDecoratedStart(currentView));
-            } else {
-                currentViewDistance = Math.abs(helper.getDecoratedEnd(currentView)
-                        - helper.getEnd());
-            }
-            if (currentViewDistance < distanceToStart) {
-                distanceToStart = currentViewDistance;
-                startView = currentView;
-            }
+    private View findEdgeView(LinearLayoutManager lm, OrientationHelper helper, boolean start) {
+        if (lm.getChildCount() == 0) {
+            return null;
         }
 
         // If we're at the end of the list, we shouldn't snap
@@ -207,37 +191,24 @@ class GravityDelegate {
             return null;
         }
 
-        return startView;
-    }
-
-    @Nullable
-    private View findEndView(LinearLayoutManager lm, @NonNull OrientationHelper helper) {
-
-        View endView = null;
-        int distanceToEnd = Integer.MAX_VALUE;
+        View edgeView = null;
+        int distanceToEdge = Integer.MAX_VALUE;
 
         for (int i = 0; i < lm.getChildCount(); i++) {
             View currentView = lm.getChildAt(i);
             int currentViewDistance;
-            if (!isRtl) {
+            if ((start && !isRtl) || (!start && isRtl)) {
+                currentViewDistance = Math.abs(helper.getDecoratedStart(currentView));
+            } else {
                 currentViewDistance = Math.abs(helper.getDecoratedEnd(currentView)
                         - helper.getEnd());
-            } else {
-                currentViewDistance = Math.abs(helper.getDecoratedStart(currentView));
             }
-            if (currentViewDistance < distanceToEnd) {
-                distanceToEnd = currentViewDistance;
-                endView = currentView;
+            if (currentViewDistance < distanceToEdge) {
+                distanceToEdge = currentViewDistance;
+                edgeView = currentView;
             }
         }
-
-        // If we're at the end of the list, we shouldn't snap
-        // to avoid having the last item not completely visible.
-        if (isAtEndOfList(lm) && !snapLastItem) {
-            return null;
-        }
-
-        return endView;
+        return edgeView;
     }
 
     private boolean isAtEndOfList(LinearLayoutManager lm) {

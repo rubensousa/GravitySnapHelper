@@ -69,21 +69,27 @@ class GravityDelegate {
                                               @NonNull View targetView) {
         int[] out = new int[2];
 
-        if (layoutManager.canScrollHorizontally()) {
+        if (!(layoutManager instanceof LinearLayoutManager)) {
+            return out;
+        }
+
+        LinearLayoutManager lm = (LinearLayoutManager) layoutManager;
+
+        if (lm.canScrollHorizontally()) {
             if ((isRtl && gravity == Gravity.END) || (!isRtl && gravity == Gravity.START)) {
-                out[0] = distanceToStart(targetView, layoutManager, getHorizontalHelper(layoutManager));
+                out[0] = distanceToStart(targetView, lm, getHorizontalHelper(lm));
             } else {
-                out[0] = distanceToEnd(targetView, layoutManager, getHorizontalHelper(layoutManager));
+                out[0] = distanceToEnd(targetView, lm, getHorizontalHelper(lm));
             }
         } else {
             out[0] = 0;
         }
 
-        if (layoutManager.canScrollVertically()) {
+        if (lm.canScrollVertically()) {
             if (gravity == Gravity.TOP) {
-                out[1] = distanceToStart(targetView, layoutManager, getVerticalHelper(layoutManager));
+                out[1] = distanceToStart(targetView, lm, getVerticalHelper(lm));
             } else { // BOTTOM
-                out[1] = distanceToEnd(targetView, layoutManager, getVerticalHelper(layoutManager));
+                out[1] = distanceToEnd(targetView, lm, getVerticalHelper(lm));
             }
         } else {
             out[1] = 0;
@@ -124,12 +130,12 @@ class GravityDelegate {
         snapLastItem = snap;
     }
 
-    private int distanceToStart(View targetView, RecyclerView.LayoutManager lm,
+    private int distanceToStart(View targetView, LinearLayoutManager lm,
                                 @NonNull OrientationHelper helper) {
         int pos = recyclerView.getChildLayoutPosition(targetView);
         int distance;
-        // Check if we have padding so that the first view stays in the correct position
-        if ((pos == 0 && !isRtl || pos == lm.getItemCount() - 1 && isRtl)
+        if ((pos == 0 && (!isRtl && !lm.getReverseLayout())
+                || pos == lm.getItemCount() - 1 && (isRtl || lm.getReverseLayout()))
                 && !recyclerView.getClipToPadding()) {
             int childStart = helper.getDecoratedStart(targetView);
             if (childStart >= helper.getStartAfterPadding() / 2) {
@@ -143,12 +149,16 @@ class GravityDelegate {
         return distance;
     }
 
-    private int distanceToEnd(View targetView, RecyclerView.LayoutManager lm,
+    private int distanceToEnd(View targetView, LinearLayoutManager lm,
                               @NonNull OrientationHelper helper) {
         int pos = recyclerView.getChildLayoutPosition(targetView);
         int distance;
-        // Check if we have padding so that the last view stays in the correct position
-        if ((pos == 0 && isRtl || pos == lm.getItemCount() - 1 && !isRtl)
+        /**
+         * The last position or the first position
+         * (when there's a reverse layout or we're on RTL mode) must collapse to the padding edge.
+         */
+        if ((pos == 0 && (isRtl || lm.getReverseLayout())
+                || pos == lm.getItemCount() - 1 && (!isRtl && !lm.getReverseLayout()))
                 && !recyclerView.getClipToPadding()) {
             int childEnd = helper.getDecoratedEnd(targetView);
             if (childEnd >= helper.getEnd() - (helper.getEnd() - helper.getEndAfterPadding()) / 2) {

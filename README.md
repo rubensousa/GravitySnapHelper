@@ -11,7 +11,11 @@ If you need snapping support to start, top, end or bottom, use GravitySnapHelper
 Add this to your build.gradle:
 
 ```groovy
+// AndroidX
 implementation 'com.github.rubensousa:gravitysnaphelper:2.0'
+
+// Old support libraries
+implementation 'com.github.rubensousa:gravitysnaphelper-compat:2.0'
 ```
 
 Otherwise, center snapping is done with LinearSnapHelper.

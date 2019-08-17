@@ -12,7 +12,7 @@ Add this to your build.gradle:
 
 ```groovy
 // AndroidX
-implementation 'com.github.rubensousa:gravitysnaphelper:2.0'
+implementation 'com.github.rubensousa:gravitysnaphelper:2.1.0'
 
 // Old support libraries
 implementation 'com.github.rubensousa:gravitysnaphelper-compat:2.0'

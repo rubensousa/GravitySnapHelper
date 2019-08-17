@@ -80,6 +80,10 @@ class GravityDelegate {
         }
     }
 
+    public int getCurrentSnappedPosition() {
+        return currentSnappedPosition;
+    }
+
     public void smoothScrollToPosition(int position) {
         scrollTo(position, true);
     }

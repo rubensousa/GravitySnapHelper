@@ -89,4 +89,8 @@ public class GravityPagerSnapHelper extends PagerSnapHelper {
         delegate.scrollToPosition(position);
     }
 
+    public int getCurrentSnappedPosition() {
+        return delegate.getCurrentSnappedPosition();
+    }
+
 }

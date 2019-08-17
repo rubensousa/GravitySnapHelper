@@ -79,6 +79,10 @@ public class GravitySnapHelper extends LinearSnapHelper {
         delegate.scrollToPosition(position);
     }
 
+    public int getCurrentSnappedPosition() {
+        return delegate.getCurrentSnappedPosition();
+    }
+
     public interface SnapListener {
         void onSnap(int position);
     }

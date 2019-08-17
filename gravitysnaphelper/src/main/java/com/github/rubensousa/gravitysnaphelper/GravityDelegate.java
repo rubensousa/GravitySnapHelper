@@ -20,8 +20,6 @@ package com.github.rubensousa.gravitysnaphelper;
 import android.view.Gravity;
 import android.view.View;
 
-import java.util.Locale;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.text.TextUtilsCompat;
@@ -29,6 +27,8 @@ import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.OrientationHelper;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.Locale;
 
 class GravityDelegate {
 
@@ -38,19 +38,19 @@ class GravityDelegate {
     private boolean isRtl;
     private boolean snapLastItem;
     private GravitySnapHelper.SnapListener listener;
-    private boolean snapping;
-    private int lastSnappedPosition;
+    private int currentSnappedPosition;
+    private boolean isScrolling = false;
     private RecyclerView recyclerView;
     private RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             super.onScrollStateChanged(recyclerView, newState);
-            if (newState == RecyclerView.SCROLL_STATE_IDLE && snapping && listener != null) {
-                if (lastSnappedPosition != RecyclerView.NO_POSITION) {
-                    listener.onSnap(lastSnappedPosition);
+            if (newState == RecyclerView.SCROLL_STATE_IDLE && listener != null) {
+                if (currentSnappedPosition != RecyclerView.NO_POSITION && isScrolling) {
+                    listener.onSnap(currentSnappedPosition);
                 }
-                snapping = false;
             }
+            isScrolling = newState != RecyclerView.SCROLL_STATE_IDLE;
         }
     };
 
@@ -165,9 +165,10 @@ class GravityDelegate {
                 snapView = findEdgeView(lm, getVerticalHelper(lm), false);
                 break;
         }
-        snapping = snapView != null;
         if (snapView != null) {
-            lastSnappedPosition = recyclerView.getChildAdapterPosition(snapView);
+            currentSnappedPosition = recyclerView.getChildAdapterPosition(snapView);
+        } else {
+            currentSnappedPosition = RecyclerView.NO_POSITION;
         }
         return snapView;
     }
@@ -258,7 +259,9 @@ class GravityDelegate {
 
     private boolean isAtEndOfList(LinearLayoutManager lm) {
         if ((!lm.getReverseLayout() && gravity == Gravity.START)
-                || (lm.getReverseLayout() && gravity == Gravity.END)) {
+                || (lm.getReverseLayout() && gravity == Gravity.END)
+                || (!lm.getReverseLayout() && gravity == Gravity.TOP)
+                || (lm.getReverseLayout() && gravity == Gravity.BOTTOM)) {
             return lm.findLastCompletelyVisibleItemPosition() == lm.getItemCount() - 1;
         } else {
             return lm.findFirstCompletelyVisibleItemPosition() == 0;

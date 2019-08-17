@@ -6,15 +6,15 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 
-import com.github.rubensousa.gravitysnaphelper.GravitySnapHelper;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.github.rubensousa.gravitysnaphelper.GravitySnapHelper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements Toolbar.OnMenuItemClickListener {
 
@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity implements Toolbar.OnMenuIte
 
     private RecyclerView mRecyclerView;
     private boolean mHorizontal;
+    private GravitySnapHelper mGravitySnapHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +30,13 @@ public class MainActivity extends AppCompatActivity implements Toolbar.OnMenuIte
         setContentView(R.layout.activity_main);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        mGravitySnapHelper = new GravitySnapHelper(Gravity.TOP, false,
+                new GravitySnapHelper.SnapListener() {
+                    @Override
+                    public void onSnap(int position) {
+                        Log.d("Snapped", position + "");
+                    }
+                });
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.inflateMenu(R.menu.main);
         toolbar.setOnMenuItemClickListener(this);
@@ -62,15 +70,11 @@ public class MainActivity extends AppCompatActivity implements Toolbar.OnMenuIte
             snapAdapter.addSnap(new Snap(Gravity.END, "Snap end with padding", true, apps));
             snapAdapter.addSnap(new Snap(Gravity.CENTER, "GravityPager snap", false, apps));
             mRecyclerView.setAdapter(snapAdapter);
+            mGravitySnapHelper.attachToRecyclerView(null);
         } else {
             Adapter adapter = new Adapter(false, false, apps);
             mRecyclerView.setAdapter(adapter);
-            new GravitySnapHelper(Gravity.TOP, false, new GravitySnapHelper.SnapListener() {
-                @Override
-                public void onSnap(int position) {
-                    Log.d("Snapped", position + "");
-                }
-            }).attachToRecyclerView(mRecyclerView);
+            mGravitySnapHelper.attachToRecyclerView(mRecyclerView);
         }
     }
 

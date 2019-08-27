@@ -4,7 +4,7 @@ RecyclerView snapping example with SnapHelper
 
 <img src="screens/snap_googleplay.gif" width=300></img>   <img src="screens/snap_final.gif" width=300></img>
 
-## How to
+## Start/Top/End/Bottom Snapping
 
 If you need snapping support to start, top, end or bottom, use GravitySnapHelper.
 
@@ -16,14 +16,6 @@ implementation 'com.github.rubensousa:gravitysnaphelper:2.1.0'
 
 // Old support libraries
 implementation 'com.github.rubensousa:gravitysnaphelper-compat:2.0'
-```
-
-Otherwise, center snapping is done with LinearSnapHelper.
-
-### Snapping center:
-
-```java
-new LinearSnapHelper().attachToRecyclerView(recyclerView);
 ```
 
 ### Snapping start with GravitySnapHelper:
@@ -43,9 +35,26 @@ topRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 new GravitySnapHelper(Gravity.TOP).attachToRecyclerView(topRecyclerView);
 ```
 
-### If you're using nested RecyclerViews, take a look at:
+## Center snapping
 
-https://github.com/rubensousa/RecyclerViewSnap/blob/master/gravitysnaphelper/src/main/java/com/github/rubensousa/gravitysnaphelper/OrientationAwareRecyclerView.java
+```java
+new LinearSnapHelper().attachToRecyclerView(recyclerView);
+```
+
+## Page snapping
+
+```java
+new PagerSnapHelper().attachToRecyclerView(recyclerView);
+```
+
+## Nested RecyclerViews
+
+Take a look at these blog posts if you're using nested RecyclerViews
+
+1. [Improving scrolling behavior of nested RecyclerViews](https://rubensousa.com/2019/08/16/nested_recyclerview_part1/)
+
+2. [Saving scroll state of nested RecyclerViews](https://rubensousa.com/2019/08/27/saving_scroll_state_of_nested_recyclerviews/)
+
 
 ## License
 

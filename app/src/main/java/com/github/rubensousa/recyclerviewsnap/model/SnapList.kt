@@ -7,6 +7,6 @@ data class SnapList(
     val title: String,
     val apps: List<App>,
     val layoutId: Int = R.layout.adapter_snap,
-    val usePadding: Boolean = false,
+    val snapToPadding: Boolean = false,
     val showScrollButton: Boolean = false
 )

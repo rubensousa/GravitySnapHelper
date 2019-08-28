@@ -79,7 +79,7 @@ class SnapListAdapter : RecyclerView.Adapter<SnapListAdapter.VH>() {
         private fun getSnapHelper(snapList: SnapList): SnapHelper {
             if (snapList.gravity == Gravity.START || snapList.gravity == Gravity.END) {
                 val gravitySnapHelper = GravitySnapHelper(snapList.gravity, this)
-                gravitySnapHelper.setIgnorePadding(!snapList.usePadding)
+                gravitySnapHelper.setSnapToPadding(snapList.snapToPadding)
                 return gravitySnapHelper
             } else if (snapList.gravity == Gravity.CENTER) {
                 return LinearSnapHelper()

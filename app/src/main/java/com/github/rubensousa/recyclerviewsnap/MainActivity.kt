@@ -229,9 +229,15 @@ class MainActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListener {
                 ), SnapList(
                     gravity = Gravity.START,
                     layoutId = R.layout.adapter_snap_padding_start,
-                    usePadding = true,
+                    snapToPadding = true,
                     title = "Snap start with padding",
                     showScrollButton = true,
+                    apps = apps
+                ), SnapList(
+                    gravity = Gravity.START,
+                    layoutId = R.layout.adapter_snap_extra_padding_start,
+                    snapToPadding = false,
+                    title = "Snap start with large padding",
                     apps = apps
                 ), SnapList(
                     gravity = Gravity.END,
@@ -241,9 +247,15 @@ class MainActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListener {
                 ), SnapList(
                     gravity = Gravity.END,
                     layoutId = R.layout.adapter_snap_padding_end,
-                    usePadding = true,
+                    snapToPadding = true,
                     title = "Snap end with padding",
                     showScrollButton = true,
+                    apps = apps
+                ), SnapList(
+                    gravity = Gravity.END,
+                    layoutId = R.layout.adapter_snap_extra_padding_end,
+                    snapToPadding = false,
+                    title = "Snap end with large padding",
                     apps = apps
                 ), SnapList(
                     gravity = Gravity.CENTER_HORIZONTAL,

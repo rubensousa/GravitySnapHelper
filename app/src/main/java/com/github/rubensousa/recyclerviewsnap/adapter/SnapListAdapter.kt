@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
-import com.github.rubensousa.gravitysnaphelper.GravityPagerSnapHelper
 import com.github.rubensousa.gravitysnaphelper.GravitySnapHelper
 import com.github.rubensousa.recyclerviewsnap.R
 import com.github.rubensousa.recyclerviewsnap.model.SnapList
@@ -80,11 +79,12 @@ class SnapListAdapter : RecyclerView.Adapter<SnapListAdapter.VH>() {
             if (snapList.gravity == Gravity.START || snapList.gravity == Gravity.END) {
                 val gravitySnapHelper = GravitySnapHelper(snapList.gravity, this)
                 gravitySnapHelper.setSnapToPadding(snapList.snapToPadding)
+                gravitySnapHelper.setScrollMsPerInch(50f)
+                // Max scroll distance = recyclerview width
+                gravitySnapHelper.setMaxScrollDistanceFromSize(1.0f)
                 return gravitySnapHelper
-            } else if (snapList.gravity == Gravity.CENTER) {
-                return LinearSnapHelper()
             } else {
-                return GravityPagerSnapHelper(Gravity.START, this)
+                return LinearSnapHelper()
             }
         }
 

@@ -1,4 +1,4 @@
-package com.github.rubensousa.recyclerviewsnap
+package com.github.rubensousa.recyclerviewsnap.adapter
 
 import android.util.Log
 import android.view.Gravity
@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
 import com.github.rubensousa.gravitysnaphelper.GravityPagerSnapHelper
 import com.github.rubensousa.gravitysnaphelper.GravitySnapHelper
+import com.github.rubensousa.recyclerviewsnap.R
+import com.github.rubensousa.recyclerviewsnap.model.SnapList
 
 class SnapListAdapter : RecyclerView.Adapter<SnapListAdapter.VH>() {
 
@@ -28,7 +30,11 @@ class SnapListAdapter : RecyclerView.Adapter<SnapListAdapter.VH>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
-        return VH(LayoutInflater.from(parent.context).inflate(viewType, parent, false))
+        return VH(
+            LayoutInflater.from(
+                parent.context
+            ).inflate(viewType, parent, false)
+        )
     }
 
     override fun getItemCount(): Int = items.size

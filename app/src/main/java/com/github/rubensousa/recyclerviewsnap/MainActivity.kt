@@ -10,6 +10,10 @@ import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.rubensousa.gravitysnaphelper.GravitySnapHelper
+import com.github.rubensousa.recyclerviewsnap.adapter.AppAdapter
+import com.github.rubensousa.recyclerviewsnap.adapter.SnapListAdapter
+import com.github.rubensousa.recyclerviewsnap.model.App
+import com.github.rubensousa.recyclerviewsnap.model.SnapList
 import java.util.*
 
 class MainActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListener {
@@ -19,28 +23,160 @@ class MainActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListener {
 
         fun getApps(): List<App> {
             val apps = ArrayList<App>()
-            apps.add(App("Google+", R.drawable.ic_google_48dp, 4.6f))
-            apps.add(App("Gmail", R.drawable.ic_gmail_48dp, 4.8f))
-            apps.add(App("Inbox", R.drawable.ic_inbox_48dp, 4.5f))
-            apps.add(App("Google Keep", R.drawable.ic_keep_48dp, 4.2f))
-            apps.add(App("Google Drive", R.drawable.ic_drive_48dp, 4.6f))
-            apps.add(App("Hangouts", R.drawable.ic_hangouts_48dp, 3.9f))
-            apps.add(App("Google Photos", R.drawable.ic_photos_48dp, 4.6f))
-            apps.add(App("Messenger", R.drawable.ic_messenger_48dp, 4.2f))
-            apps.add(App("Sheets", R.drawable.ic_sheets_48dp, 4.2f))
-            apps.add(App("Slides", R.drawable.ic_slides_48dp, 4.2f))
-            apps.add(App("Docs", R.drawable.ic_docs_48dp, 4.2f))
-            apps.add(App("Google+", R.drawable.ic_google_48dp, 4.6f))
-            apps.add(App("Gmail", R.drawable.ic_gmail_48dp, 4.8f))
-            apps.add(App("Inbox", R.drawable.ic_inbox_48dp, 4.5f))
-            apps.add(App("Google Keep", R.drawable.ic_keep_48dp, 4.2f))
-            apps.add(App("Google Drive", R.drawable.ic_drive_48dp, 4.6f))
-            apps.add(App("Hangouts", R.drawable.ic_hangouts_48dp, 3.9f))
-            apps.add(App("Google Photos", R.drawable.ic_photos_48dp, 4.6f))
-            apps.add(App("Messenger", R.drawable.ic_messenger_48dp, 4.2f))
-            apps.add(App("Sheets", R.drawable.ic_sheets_48dp, 4.2f))
-            apps.add(App("Slides", R.drawable.ic_slides_48dp, 4.2f))
-            apps.add(App("Docs", R.drawable.ic_docs_48dp, 4.2f))
+            apps.add(
+                App(
+                    "Google+",
+                    R.drawable.ic_google_48dp,
+                    4.6f
+                )
+            )
+            apps.add(
+                App(
+                    "Gmail",
+                    R.drawable.ic_gmail_48dp,
+                    4.8f
+                )
+            )
+            apps.add(
+                App(
+                    "Inbox",
+                    R.drawable.ic_inbox_48dp,
+                    4.5f
+                )
+            )
+            apps.add(
+                App(
+                    "Google Keep",
+                    R.drawable.ic_keep_48dp,
+                    4.2f
+                )
+            )
+            apps.add(
+                App(
+                    "Google Drive",
+                    R.drawable.ic_drive_48dp,
+                    4.6f
+                )
+            )
+            apps.add(
+                App(
+                    "Hangouts",
+                    R.drawable.ic_hangouts_48dp,
+                    3.9f
+                )
+            )
+            apps.add(
+                App(
+                    "Google Photos",
+                    R.drawable.ic_photos_48dp,
+                    4.6f
+                )
+            )
+            apps.add(
+                App(
+                    "Messenger",
+                    R.drawable.ic_messenger_48dp,
+                    4.2f
+                )
+            )
+            apps.add(
+                App(
+                    "Sheets",
+                    R.drawable.ic_sheets_48dp,
+                    4.2f
+                )
+            )
+            apps.add(
+                App(
+                    "Slides",
+                    R.drawable.ic_slides_48dp,
+                    4.2f
+                )
+            )
+            apps.add(
+                App(
+                    "Docs",
+                    R.drawable.ic_docs_48dp,
+                    4.2f
+                )
+            )
+            apps.add(
+                App(
+                    "Google+",
+                    R.drawable.ic_google_48dp,
+                    4.6f
+                )
+            )
+            apps.add(
+                App(
+                    "Gmail",
+                    R.drawable.ic_gmail_48dp,
+                    4.8f
+                )
+            )
+            apps.add(
+                App(
+                    "Inbox",
+                    R.drawable.ic_inbox_48dp,
+                    4.5f
+                )
+            )
+            apps.add(
+                App(
+                    "Google Keep",
+                    R.drawable.ic_keep_48dp,
+                    4.2f
+                )
+            )
+            apps.add(
+                App(
+                    "Google Drive",
+                    R.drawable.ic_drive_48dp,
+                    4.6f
+                )
+            )
+            apps.add(
+                App(
+                    "Hangouts",
+                    R.drawable.ic_hangouts_48dp,
+                    3.9f
+                )
+            )
+            apps.add(
+                App(
+                    "Google Photos",
+                    R.drawable.ic_photos_48dp,
+                    4.6f
+                )
+            )
+            apps.add(
+                App(
+                    "Messenger",
+                    R.drawable.ic_messenger_48dp,
+                    4.2f
+                )
+            )
+            apps.add(
+                App(
+                    "Sheets",
+                    R.drawable.ic_sheets_48dp,
+                    4.2f
+                )
+            )
+            apps.add(
+                App(
+                    "Slides",
+                    R.drawable.ic_slides_48dp,
+                    4.2f
+                )
+            )
+            apps.add(
+                App(
+                    "Docs",
+                    R.drawable.ic_docs_48dp,
+                    4.2f
+                )
+            )
             return apps
         }
     }
@@ -119,7 +255,8 @@ class MainActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListener {
             recyclerView.adapter = adapter
             snapHelper.attachToRecyclerView(null)
         } else {
-            val adapter = AppAdapter(R.layout.adapter_vertical)
+            val adapter =
+                AppAdapter(R.layout.adapter_vertical)
             adapter.setItems(apps)
             recyclerView.adapter = adapter
             snapHelper.attachToRecyclerView(recyclerView)

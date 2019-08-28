@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.rubensousa.gravitysnaphelper.GravitySnapHelper
+import com.github.rubensousa.recyclerviewsnap.adapter.AppAdapter
 
 
 class GridActivity : AppCompatActivity() {
@@ -15,7 +16,8 @@ class GridActivity : AppCompatActivity() {
         setContentView(R.layout.activity_grid)
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
 
-        val adapter = AppAdapter(R.layout.adapter_vertical)
+        val adapter =
+            AppAdapter(R.layout.adapter_vertical)
         adapter.setItems(MainActivity.getApps())
 
         recyclerView.layoutManager = GridLayoutManager(this, 2, RecyclerView.VERTICAL, true)

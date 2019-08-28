@@ -1,4 +1,4 @@
-package com.github.rubensousa.recyclerviewsnap
+package com.github.rubensousa.recyclerviewsnap.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.github.rubensousa.recyclerviewsnap.R
+import com.github.rubensousa.recyclerviewsnap.model.App
 
 class AppAdapter(private val layoutId: Int = R.layout.adapter) :
     RecyclerView.Adapter<AppAdapter.VH>() {
@@ -18,7 +20,11 @@ class AppAdapter(private val layoutId: Int = R.layout.adapter) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
-        return VH(LayoutInflater.from(parent.context).inflate(layoutId, parent, false))
+        return VH(
+            LayoutInflater.from(
+                parent.context
+            ).inflate(layoutId, parent, false)
+        )
     }
 
     override fun getItemCount(): Int = items.size

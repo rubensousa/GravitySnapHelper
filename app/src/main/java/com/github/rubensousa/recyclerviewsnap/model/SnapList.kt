@@ -1,4 +1,6 @@
-package com.github.rubensousa.recyclerviewsnap
+package com.github.rubensousa.recyclerviewsnap.model
+
+import com.github.rubensousa.recyclerviewsnap.R
 
 data class SnapList(
     val gravity: Int,

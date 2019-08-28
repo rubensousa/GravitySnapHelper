@@ -33,6 +33,10 @@ public class GravitySnapHelper extends LinearSnapHelper {
         this(gravity, false, null);
     }
 
+    public GravitySnapHelper(int gravity, @NonNull SnapListener snapListener) {
+        this(gravity, false, snapListener);
+    }
+
     public GravitySnapHelper(int gravity, boolean enableSnapLastItem) {
         this(gravity, enableSnapLastItem, null);
     }
@@ -69,6 +73,18 @@ public class GravitySnapHelper extends LinearSnapHelper {
      */
     public void enableLastItemSnap(boolean snap) {
         delegate.enableLastItemSnap(snap);
+    }
+
+    /**
+     * If true, GravitySnapHelper will snap to the gravity edge
+     * plus any amount of padding that was set in the RecyclerView.
+     * <p>
+     * The default value is false.
+     *
+     * @param snapToPadding true if you want to snap to the padding
+     */
+    public void setSnapToPadding(boolean snapToPadding) {
+        delegate.setSnapToPadding(snapToPadding);
     }
 
     public void smoothScrollToPosition(int position) {

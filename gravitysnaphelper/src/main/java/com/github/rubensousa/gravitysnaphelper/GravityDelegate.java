@@ -40,6 +40,7 @@ class GravityDelegate {
     private GravitySnapHelper.SnapListener listener;
     private int currentSnappedPosition;
     private boolean isScrolling = false;
+    private boolean snapToPadding = false;
     private RecyclerView recyclerView;
     private RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {
         @Override
@@ -82,6 +83,10 @@ class GravityDelegate {
 
     public int getCurrentSnappedPosition() {
         return currentSnappedPosition;
+    }
+
+    public void setSnapToPadding(boolean ignorePadding) {
+        this.snapToPadding = ignorePadding;
     }
 
     public void smoothScrollToPosition(int position) {
@@ -127,9 +132,9 @@ class GravityDelegate {
 
         if (lm.canScrollHorizontally()) {
             if ((isRtl && gravity == Gravity.END) || (!isRtl && gravity == Gravity.START)) {
-                out[0] = distanceToStart(targetView, lm, getHorizontalHelper(lm));
+                out[0] = distanceToStart(targetView, getHorizontalHelper(lm));
             } else {
-                out[0] = distanceToEnd(targetView, lm, getHorizontalHelper(lm));
+                out[0] = distanceToEnd(targetView, getHorizontalHelper(lm));
             }
         } else {
             out[0] = 0;
@@ -137,9 +142,9 @@ class GravityDelegate {
 
         if (lm.canScrollVertically()) {
             if (gravity == Gravity.TOP) {
-                out[1] = distanceToStart(targetView, lm, getVerticalHelper(lm));
+                out[1] = distanceToStart(targetView, getVerticalHelper(lm));
             } else { // BOTTOM
-                out[1] = distanceToEnd(targetView, lm, getVerticalHelper(lm));
+                out[1] = distanceToEnd(targetView, getVerticalHelper(lm));
             }
         } else {
             out[1] = 0;
@@ -181,13 +186,10 @@ class GravityDelegate {
         snapLastItem = snap;
     }
 
-    private int distanceToStart(View targetView, LinearLayoutManager lm,
-                                @NonNull OrientationHelper helper) {
-        int pos = recyclerView.getChildLayoutPosition(targetView);
+    private int distanceToStart(View targetView, @NonNull OrientationHelper helper) {
         int distance;
-        if ((pos == 0 && (!isRtl || lm.getReverseLayout())
-                || pos == lm.getItemCount() - 1 && (isRtl || lm.getReverseLayout()))
-                && !recyclerView.getClipToPadding()) {
+        // If we don't care about padding, just snap to the start of the view
+        if (!snapToPadding) {
             int childStart = helper.getDecoratedStart(targetView);
             if (childStart >= helper.getStartAfterPadding() / 2) {
                 distance = childStart - helper.getStartAfterPadding();
@@ -195,21 +197,15 @@ class GravityDelegate {
                 distance = childStart;
             }
         } else {
-            distance = helper.getDecoratedStart(targetView);
+            distance = helper.getDecoratedStart(targetView) - helper.getStartAfterPadding();
         }
         return distance;
     }
 
-    private int distanceToEnd(View targetView, LinearLayoutManager lm,
-                              @NonNull OrientationHelper helper) {
-        int pos = recyclerView.getChildLayoutPosition(targetView);
+    private int distanceToEnd(View targetView, @NonNull OrientationHelper helper) {
         int distance;
 
-        // The last position or the first position
-        // (when there's a reverse layout or we're on RTL mode) must collapse to the padding edge.
-        if ((pos == 0 && (isRtl || lm.getReverseLayout())
-                || pos == lm.getItemCount() - 1 && (!isRtl || lm.getReverseLayout()))
-                && !recyclerView.getClipToPadding()) {
+        if (!snapToPadding) {
             int childEnd = helper.getDecoratedEnd(targetView);
             if (childEnd >= helper.getEnd() - (helper.getEnd() - helper.getEndAfterPadding()) / 2) {
                 distance = helper.getDecoratedEnd(targetView) - helper.getEnd();
@@ -217,8 +213,9 @@ class GravityDelegate {
                 distance = childEnd - helper.getEndAfterPadding();
             }
         } else {
-            distance = helper.getDecoratedEnd(targetView) - helper.getEnd();
+            distance = helper.getDecoratedEnd(targetView) - helper.getEndAfterPadding();
         }
+
         return distance;
     }
 

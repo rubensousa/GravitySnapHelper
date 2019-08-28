@@ -20,11 +20,14 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 
 public class GravitySnapHelper extends LinearSnapHelper {
+
+    public static final int SCROLL_DISTANCE_DEFAULT = -1;
 
     @NonNull
     private final GravityDelegate delegate;
@@ -64,6 +67,21 @@ public class GravitySnapHelper extends LinearSnapHelper {
         return delegate.findSnapView(layoutManager);
     }
 
+    @Override
+    public int[] calculateScrollDistance(int velocityX, int velocityY) {
+        final int[] out = delegate.calculateScrollDistance(velocityX, velocityY);
+        if (out[0] == 0 && out[1] == 0) {
+            return super.calculateScrollDistance(velocityX, velocityY);
+        }
+        return out;
+    }
+
+    @Nullable
+    @Override
+    protected RecyclerView.SmoothScroller createScroller(RecyclerView.LayoutManager layoutManager) {
+        return delegate.createScroller(layoutManager);
+    }
+
     /**
      * Enable snapping of the last item that's snappable.
      * The default value is false, because you can't see the last item completely
@@ -85,6 +103,43 @@ public class GravitySnapHelper extends LinearSnapHelper {
      */
     public void setSnapToPadding(boolean snapToPadding) {
         delegate.setSnapToPadding(snapToPadding);
+    }
+
+    /**
+     * Sets the scroll duration in ms per inch.
+     * <p>
+     * Default value is 100.0f
+     * <p>
+     * This value will be used in
+     * {@link GravitySnapHelper#createScroller(RecyclerView.LayoutManager)}
+     *
+     * @param ms scroll duration in ms per inch
+     */
+    public void setScrollMsPerInch(float ms) {
+        delegate.setScrollMsPerInch(ms);
+    }
+
+    /**
+     * Changes the max scroll distance in absolute values.
+     *
+     * @param distance max scroll distance in pixels
+     *                 or {@link GravitySnapHelper#SCROLL_DISTANCE_DEFAULT}
+     *                 to reset the max scroll distance
+     */
+    public void setMaxScrollDistance(@Px int distance) {
+        delegate.setMaxScrollDistance(distance);
+    }
+
+    /**
+     * Changes the max scroll distance depending on the available size of the RecyclerView.
+     * <p>
+     * Example: if you pass 0.5f and the RecyclerView measures 600dp,
+     * the max scroll distance will be 300dp.
+     *
+     * @param offset size offset to be used for the max scroll distance
+     */
+    public void setMaxScrollDistanceFromSize(float offset) {
+        delegate.setMaxScrollDistanceFromSize(offset);
     }
 
     public void smoothScrollToPosition(int position) {

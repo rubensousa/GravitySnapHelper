@@ -17,97 +17,26 @@
 package com.github.rubensousa.gravitysnaphelper;
 
 
-import android.view.View;
-
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.PagerSnapHelper;
-import androidx.recyclerview.widget.RecyclerView;
 
-public class GravityPagerSnapHelper extends PagerSnapHelper {
-
-    @NonNull
-    private final GravityDelegate delegate;
+/**
+ * A {@link GravitySnapHelper} that sets a default max scroll distance
+ * of the size of the RecyclerView by setting
+ * {@link GravitySnapHelper#setMaxScrollDistanceFromSize(float)} to 1.0f by default
+ *
+ * @deprecated Use {@link GravitySnapHelper} instead
+ */
+@Deprecated
+public class GravityPagerSnapHelper extends GravitySnapHelper {
 
     public GravityPagerSnapHelper(int gravity) {
-        this(gravity, false, null);
+        this(gravity, null);
     }
 
     public GravityPagerSnapHelper(int gravity,
-                                  @NonNull GravitySnapHelper.SnapListener snapListener) {
-        this(gravity, false, snapListener);
-    }
-
-    public GravityPagerSnapHelper(int gravity, boolean enableSnapLastItem) {
-        this(gravity, enableSnapLastItem, null);
-    }
-
-    public GravityPagerSnapHelper(int gravity, boolean enableSnapLastItem,
                                   @Nullable GravitySnapHelper.SnapListener snapListener) {
-        delegate = new GravityDelegate(gravity, enableSnapLastItem, snapListener);
+        super(gravity, false, snapListener);
+        setMaxScrollDistanceFromSize(1.0f);
+        setScrollMsPerInch(50f);
     }
-
-    @Override
-    public void attachToRecyclerView(@Nullable RecyclerView recyclerView)
-            throws IllegalStateException {
-        if (recyclerView != null
-                && (!(recyclerView.getLayoutManager() instanceof LinearLayoutManager)
-                || recyclerView.getLayoutManager() instanceof GridLayoutManager)) {
-            throw new IllegalStateException("GravityPagerSnapHelper needs a RecyclerView" +
-                    " with a LinearLayoutManager");
-        }
-        delegate.attachToRecyclerView(recyclerView);
-        super.attachToRecyclerView(recyclerView);
-    }
-
-    @Nullable
-    @Override
-    public int[] calculateDistanceToFinalSnap(@NonNull RecyclerView.LayoutManager layoutManager,
-                                              @NonNull View targetView) {
-        return delegate.calculateDistanceToFinalSnap(layoutManager, targetView);
-    }
-
-    @Nullable
-    @Override
-    public View findSnapView(RecyclerView.LayoutManager layoutManager) {
-        return delegate.findSnapView(layoutManager);
-    }
-
-    /**
-     * Enable snapping of the last item that's snappable.
-     * The default value is false, because you can't see the last item completely
-     * if this is enabled.
-     *
-     * @param snap true if you want to enable snapping of the last snappable item
-     */
-    public void enableLastItemSnap(boolean snap) {
-        delegate.enableLastItemSnap(snap);
-    }
-
-    /**
-     * If true, GravitySnapHelper will snap to the gravity edge
-     * plus any amount of padding that was set in the RecyclerView.
-     * <p>
-     * The default value is false.
-     *
-     * @param snapToPadding true if you want to snap to the padding
-     */
-    public void setSnapToPadding(boolean snapToPadding) {
-        delegate.setSnapToPadding(snapToPadding);
-    }
-
-    public void smoothScrollToPosition(int position) {
-        delegate.smoothScrollToPosition(position);
-    }
-
-    public void scrollToPosition(int position) {
-        delegate.scrollToPosition(position);
-    }
-
-    public int getCurrentSnappedPosition() {
-        return delegate.getCurrentSnappedPosition();
-    }
-
 }

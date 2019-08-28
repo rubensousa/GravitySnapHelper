@@ -17,14 +17,18 @@
 package com.github.rubensousa.gravitysnaphelper;
 
 
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.Scroller;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.text.TextUtilsCompat;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.OrientationHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -41,6 +45,9 @@ class GravityDelegate {
     private int currentSnappedPosition;
     private boolean isScrolling = false;
     private boolean snapToPadding = false;
+    private float scrollMsPerInch = 100f;
+    private int maxScrollDistance = GravitySnapHelper.SCROLL_DISTANCE_DEFAULT;
+    private float maxScrollDistanceOffset = 0f;
     private RecyclerView recyclerView;
     private RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {
         @Override
@@ -78,6 +85,9 @@ class GravityDelegate {
                 recyclerView.addOnScrollListener(scrollListener);
             }
             this.recyclerView = recyclerView;
+        } else {
+            verticalHelper = null;
+            horizontalHelper = null;
         }
     }
 
@@ -97,26 +107,17 @@ class GravityDelegate {
         scrollTo(position, false);
     }
 
-    private void scrollTo(int position, boolean smooth) {
-        if (recyclerView.getLayoutManager() != null) {
-            RecyclerView.ViewHolder viewHolder
-                    = recyclerView.findViewHolderForAdapterPosition(position);
-            if (viewHolder != null) {
-                int[] distances = calculateDistanceToFinalSnap(recyclerView.getLayoutManager(),
-                        viewHolder.itemView);
-                if (smooth) {
-                    recyclerView.smoothScrollBy(distances[0], distances[1]);
-                } else {
-                    recyclerView.scrollBy(distances[0], distances[1]);
-                }
-            } else {
-                if (smooth) {
-                    recyclerView.smoothScrollToPosition(position);
-                } else {
-                    recyclerView.scrollToPosition(position);
-                }
-            }
-        }
+    public void setScrollMsPerInch(float ms) {
+        scrollMsPerInch = ms;
+    }
+
+    public void setMaxScrollDistance(int distance) {
+        maxScrollDistance = distance;
+        maxScrollDistanceOffset = 0f;
+    }
+
+    public void setMaxScrollDistanceFromSize(float offset) {
+        maxScrollDistanceOffset = offset;
     }
 
     @NonNull
@@ -136,20 +137,13 @@ class GravityDelegate {
             } else {
                 out[0] = distanceToEnd(targetView, getHorizontalHelper(lm));
             }
-        } else {
-            out[0] = 0;
-        }
-
-        if (lm.canScrollVertically()) {
+        } else if (lm.canScrollVertically()) {
             if (gravity == Gravity.TOP) {
                 out[1] = distanceToStart(targetView, getVerticalHelper(lm));
             } else { // BOTTOM
                 out[1] = distanceToEnd(targetView, getVerticalHelper(lm));
             }
-        } else {
-            out[1] = 0;
         }
-
         return out;
     }
 
@@ -182,8 +176,91 @@ class GravityDelegate {
         return snapView;
     }
 
+    @NonNull
+    public int[] calculateScrollDistance(int velocityX, int velocityY) {
+        if (recyclerView == null
+                || (verticalHelper == null && horizontalHelper == null)
+                || (maxScrollDistance == -1 && maxScrollDistanceOffset == 0f)) {
+            return new int[2];
+        }
+        final int[] out = new int[2];
+        Scroller scroller = new Scroller(recyclerView.getContext(),
+                new DecelerateInterpolator());
+        int maxDistance = 0;
+        if (maxScrollDistanceOffset != 0f) {
+            if (verticalHelper != null) {
+                maxDistance = (int) ((verticalHelper.getEndAfterPadding()
+                        - verticalHelper.getStartAfterPadding()) * maxScrollDistanceOffset);
+            } else if (horizontalHelper != null) {
+                maxDistance = (int) ((horizontalHelper.getEndAfterPadding()
+                        - horizontalHelper.getStartAfterPadding()) * maxScrollDistanceOffset);
+            }
+        } else {
+            maxDistance = maxScrollDistance;
+        }
+        scroller.fling(0, 0, velocityX, velocityY,
+                -maxDistance, maxDistance,
+                -maxDistance, maxDistance);
+        out[0] = scroller.getFinalX();
+        out[1] = scroller.getFinalY();
+        return out;
+    }
+
+    @Nullable
+    public RecyclerView.SmoothScroller createScroller(RecyclerView.LayoutManager layoutManager) {
+        if (!(layoutManager instanceof RecyclerView.SmoothScroller.ScrollVectorProvider)
+                || recyclerView == null) {
+            return null;
+        }
+        return new LinearSmoothScroller(recyclerView.getContext()) {
+            @Override
+            protected void onTargetFound(View targetView, RecyclerView.State state, RecyclerView.SmoothScroller.Action
+                    action) {
+                if (recyclerView == null || recyclerView.getLayoutManager() == null) {
+                    // The associated RecyclerView has been removed so there is no action to take.
+                    return;
+                }
+                int[] snapDistances = calculateDistanceToFinalSnap(recyclerView.getLayoutManager(),
+                        targetView);
+                final int dx = snapDistances[0];
+                final int dy = snapDistances[1];
+                final int time = calculateTimeForDeceleration(Math.max(Math.abs(dx), Math.abs(dy)));
+                if (time > 0) {
+                    action.update(dx, dy, time, mDecelerateInterpolator);
+                }
+            }
+
+            @Override
+            protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
+                return scrollMsPerInch / displayMetrics.densityDpi;
+            }
+        };
+    }
+
     public void enableLastItemSnap(boolean snap) {
         snapLastItem = snap;
+    }
+
+    private void scrollTo(int position, boolean smooth) {
+        if (recyclerView.getLayoutManager() != null) {
+            RecyclerView.ViewHolder viewHolder
+                    = recyclerView.findViewHolderForAdapterPosition(position);
+            if (viewHolder != null) {
+                int[] distances = calculateDistanceToFinalSnap(recyclerView.getLayoutManager(),
+                        viewHolder.itemView);
+                if (smooth) {
+                    recyclerView.smoothScrollBy(distances[0], distances[1]);
+                } else {
+                    recyclerView.scrollBy(distances[0], distances[1]);
+                }
+            } else {
+                if (smooth) {
+                    recyclerView.smoothScrollToPosition(position);
+                } else {
+                    recyclerView.scrollToPosition(position);
+                }
+            }
+        }
     }
 
     private int distanceToStart(View targetView, @NonNull OrientationHelper helper) {
@@ -269,14 +346,14 @@ class GravityDelegate {
         }
     }
 
-    private OrientationHelper getVerticalHelper(RecyclerView.LayoutManager layoutManager) {
+    OrientationHelper getVerticalHelper(RecyclerView.LayoutManager layoutManager) {
         if (verticalHelper == null) {
             verticalHelper = OrientationHelper.createVerticalHelper(layoutManager);
         }
         return verticalHelper;
     }
 
-    private OrientationHelper getHorizontalHelper(RecyclerView.LayoutManager layoutManager) {
+    OrientationHelper getHorizontalHelper(RecyclerView.LayoutManager layoutManager) {
         if (horizontalHelper == null) {
             horizontalHelper = OrientationHelper.createHorizontalHelper(layoutManager);
         }

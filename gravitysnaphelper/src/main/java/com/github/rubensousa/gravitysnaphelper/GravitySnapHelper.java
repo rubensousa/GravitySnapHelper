@@ -51,6 +51,37 @@ public class GravitySnapHelper extends LinearSnapHelper {
 
     public static final int FLING_DISTANCE_DEFAULT = -1;
 
+    @Override
+    public int[] calculateDistanceToFinalSnap(@NonNull RecyclerView.LayoutManager layoutManager,
+                                              @NonNull View targetView) {
+        if (gravity == Gravity.CENTER) {
+            return super.calculateDistanceToFinalSnap(layoutManager, targetView);
+        }
+
+        int[] out = new int[2];
+
+        if (!(layoutManager instanceof LinearLayoutManager)) {
+            return out;
+        }
+
+        LinearLayoutManager lm = (LinearLayoutManager) layoutManager;
+
+        if (lm.canScrollHorizontally()) {
+            if ((isRtl && gravity == Gravity.END) || (!isRtl && gravity == Gravity.START)) {
+                out[0] = getDistanceToStart(targetView, getHorizontalHelper(lm));
+            } else {
+                out[0] = getDistanceToEnd(targetView, getHorizontalHelper(lm));
+            }
+        } else if (lm.canScrollVertically()) {
+            if (gravity == Gravity.TOP) {
+                out[1] = getDistanceToStart(targetView, getVerticalHelper(lm));
+            } else {
+                out[1] = getDistanceToEnd(targetView, getVerticalHelper(lm));
+            }
+        }
+        return out;
+    }
+
     private int gravity;
     private boolean isRtl;
     private boolean snapLastItem;
@@ -126,35 +157,17 @@ public class GravitySnapHelper extends LinearSnapHelper {
         super.attachToRecyclerView(recyclerView);
     }
 
-    @Override
-    public int[] calculateDistanceToFinalSnap(@NonNull RecyclerView.LayoutManager layoutManager,
-                                              @NonNull View targetView) {
-        if (gravity == Gravity.CENTER) {
-            return super.calculateDistanceToFinalSnap(layoutManager, targetView);
-        }
-
-        int[] out = new int[2];
-
-        if (!(layoutManager instanceof LinearLayoutManager)) {
-            return out;
-        }
-
-        LinearLayoutManager lm = (LinearLayoutManager) layoutManager;
-
-        if (lm.canScrollHorizontally()) {
-            if ((isRtl && gravity == Gravity.END) || (!isRtl && gravity == Gravity.START)) {
-                out[0] = distanceToStart(targetView, getHorizontalHelper(lm));
-            } else {
-                out[0] = distanceToEnd(targetView, getHorizontalHelper(lm));
-            }
-        } else if (lm.canScrollVertically()) {
-            if (gravity == Gravity.TOP) {
-                out[1] = distanceToStart(targetView, getVerticalHelper(lm));
-            } else {
-                out[1] = distanceToEnd(targetView, getVerticalHelper(lm));
-            }
-        }
-        return out;
+    /**
+     * Changes the max fling distance depending on the available size of the RecyclerView.
+     * <p>
+     * Example: if you pass 0.5f and the RecyclerView measures 600dp,
+     * the max fling distance will be 300dp.
+     *
+     * @param offset size offset to be used for the max fling distance
+     */
+    public void setMaxFlingDistanceFromSize(float offset) {
+        maxFlingDistance = FLING_DISTANCE_DEFAULT;
+        maxFlingDistanceOffset = offset;
     }
 
     @Override
@@ -282,16 +295,17 @@ public class GravitySnapHelper extends LinearSnapHelper {
     }
 
     /**
-     * Changes the max fling distance depending on the available size of the RecyclerView.
-     * <p>
-     * Example: if you pass 0.5f and the RecyclerView measures 600dp,
-     * the max scroll distance will be 300dp.
+     * Changes the gravity of this {@link GravitySnapHelper}
+     * and dispatches a smooth scroll for the new snap position.
      *
-     * @param offset size offset to be used for the max fling distance
+     * @param newGravity one of the following: {@link Gravity#START}, {@link Gravity#TOP},
+     *                   {@link Gravity#END}, {@link Gravity#BOTTOM}, {@link Gravity#CENTER}
      */
-    public void setMaxFlingDistanceFromSize(float offset) {
-        maxFlingDistance = FLING_DISTANCE_DEFAULT;
-        maxFlingDistanceOffset = offset;
+    public void setGravity(int newGravity) {
+        if (this.gravity != newGravity) {
+            this.gravity = newGravity;
+            updateSnap();
+        }
     }
 
     private int getMaxFlingDistance() {
@@ -329,32 +343,25 @@ public class GravitySnapHelper extends LinearSnapHelper {
     }
 
     /**
-     * Changes the gravity of this {@link GravitySnapHelper}
-     * and dispatches a smooth scroll for the new snap position.
-     *
-     * @param newGravity one of the following: {@link Gravity#START}, {@link Gravity#TOP},
-     *                   {@link Gravity#END}, {@link Gravity#BOTTOM}, {@link Gravity#CENTER}
+     * @return the position of the current view that's snapped
+     * or {@link RecyclerView#NO_POSITION} in case there's none.
      */
-    public void setGravity(int newGravity) {
-        if (this.gravity != newGravity) {
-            this.gravity = newGravity;
-            updateSnap(true);
-        }
-    }
-
     public int getCurrentSnappedPosition() {
-        if (currentSnappedPosition == RecyclerView.NO_POSITION) {
-            updateSnap(false);
+        if (recyclerView != null && recyclerView.getLayoutManager() != null) {
+            View snappedView = findSnapView(recyclerView.getLayoutManager());
+            if (snappedView != null) {
+                return recyclerView.getChildAdapterPosition(snappedView);
+            }
         }
-        return currentSnappedPosition;
+        return RecyclerView.NO_POSITION;
     }
 
-    private void updateSnap(boolean scroll) {
+    private void updateSnap() {
         if (recyclerView == null || recyclerView.getLayoutManager() == null) {
             return;
         }
         View snapView = findSnapView(recyclerView.getLayoutManager());
-        if (snapView != null && scroll) {
+        if (snapView != null) {
             int adapterPosition = recyclerView.getChildAdapterPosition(snapView);
             if (adapterPosition != RecyclerView.NO_POSITION) {
                 scrollTo(adapterPosition, true);
@@ -364,19 +371,22 @@ public class GravitySnapHelper extends LinearSnapHelper {
 
     private void scrollTo(int position, boolean smooth) {
         if (recyclerView.getLayoutManager() != null) {
-            RecyclerView.ViewHolder viewHolder
-                    = recyclerView.findViewHolderForAdapterPosition(position);
-            if (viewHolder != null) {
-                int[] distances = calculateDistanceToFinalSnap(recyclerView.getLayoutManager(),
-                        viewHolder.itemView);
-                if (smooth) {
-                    recyclerView.smoothScrollBy(distances[0], distances[1]);
+            if (smooth) {
+                RecyclerView.SmoothScroller smoothScroller
+                        = createScroller(recyclerView.getLayoutManager());
+                if (smoothScroller != null) {
+                    smoothScroller.setTargetPosition(position);
+                    recyclerView.getLayoutManager().startSmoothScroll(smoothScroller);
                 } else {
-                    recyclerView.scrollBy(distances[0], distances[1]);
+                    recyclerView.smoothScrollToPosition(position);
                 }
             } else {
-                if (smooth) {
-                    recyclerView.smoothScrollToPosition(position);
+                RecyclerView.ViewHolder viewHolder
+                        = recyclerView.findViewHolderForAdapterPosition(position);
+                if (viewHolder != null) {
+                    int[] distances = calculateDistanceToFinalSnap(recyclerView.getLayoutManager(),
+                            viewHolder.itemView);
+                    recyclerView.scrollBy(distances[0], distances[1]);
                 } else {
                     recyclerView.scrollToPosition(position);
                 }
@@ -384,7 +394,7 @@ public class GravitySnapHelper extends LinearSnapHelper {
         }
     }
 
-    private int distanceToStart(View targetView, @NonNull OrientationHelper helper) {
+    private int getDistanceToStart(View targetView, @NonNull OrientationHelper helper) {
         int distance;
         // If we don't care about padding, just snap to the start of the view
         if (!snapToPadding) {
@@ -400,7 +410,7 @@ public class GravitySnapHelper extends LinearSnapHelper {
         return distance;
     }
 
-    private int distanceToEnd(View targetView, @NonNull OrientationHelper helper) {
+    private int getDistanceToEnd(View targetView, @NonNull OrientationHelper helper) {
         int distance;
 
         if (!snapToPadding) {
@@ -415,6 +425,10 @@ public class GravitySnapHelper extends LinearSnapHelper {
         }
 
         return distance;
+    }
+
+    public interface SnapListener {
+        void onSnap(int position);
     }
 
     /**
@@ -509,10 +523,6 @@ public class GravitySnapHelper extends LinearSnapHelper {
             horizontalHelper = OrientationHelper.createHorizontalHelper(layoutManager);
         }
         return horizontalHelper;
-    }
-
-    public interface SnapListener {
-        void onSnap(int position);
     }
 
 }

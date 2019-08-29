@@ -51,16 +51,8 @@ public class GravitySnapHelper extends LinearSnapHelper {
 
     public static final int FLING_DISTANCE_DEFAULT = -1;
 
-    /**
-     * Changes the max fling distance in absolute values.
-     *
-     * @param distance max fling distance in pixels
-     *                 or {@link GravitySnapHelper#FLING_DISTANCE_DEFAULT}
-     *                 to reset it to the default value
-     */
-    public void setMaxFlingDistance(@Px int distance) {
-        maxFlingDistance = distance;
-        maxFlingDistanceOffset = FLING_DISTANCE_DEFAULT;
+    public interface SnapListener {
+        void onSnap(int position);
     }
 
     private int gravity;
@@ -119,6 +111,9 @@ public class GravitySnapHelper extends LinearSnapHelper {
     @Override
     public void attachToRecyclerView(@Nullable RecyclerView recyclerView)
             throws IllegalStateException {
+        if (this.recyclerView != null) {
+            this.recyclerView.removeOnScrollListener(scrollListener);
+        }
         if (recyclerView != null) {
             recyclerView.setOnFlingListener(null);
             if (gravity == Gravity.START || gravity == Gravity.END) {
@@ -130,9 +125,6 @@ public class GravitySnapHelper extends LinearSnapHelper {
             }
             this.recyclerView = recyclerView;
         } else {
-            if (this.recyclerView != null) {
-                this.recyclerView.removeOnScrollListener(scrollListener);
-            }
             this.recyclerView = null;
         }
         super.attachToRecyclerView(recyclerView);
@@ -171,6 +163,37 @@ public class GravitySnapHelper extends LinearSnapHelper {
             currentSnappedPosition = RecyclerView.NO_POSITION;
         }
         return snapView;
+    }
+
+    @Override
+    public int[] calculateDistanceToFinalSnap(@NonNull RecyclerView.LayoutManager layoutManager,
+                                              @NonNull View targetView) {
+        if (gravity == Gravity.CENTER) {
+            return super.calculateDistanceToFinalSnap(layoutManager, targetView);
+        }
+
+        int[] out = new int[2];
+
+        if (!(layoutManager instanceof LinearLayoutManager)) {
+            return out;
+        }
+
+        LinearLayoutManager lm = (LinearLayoutManager) layoutManager;
+
+        if (lm.canScrollHorizontally()) {
+            if ((isRtl && gravity == Gravity.END) || (!isRtl && gravity == Gravity.START)) {
+                out[0] = getDistanceToStart(targetView, getHorizontalHelper(lm));
+            } else {
+                out[0] = getDistanceToEnd(targetView, getHorizontalHelper(lm));
+            }
+        } else if (lm.canScrollVertically()) {
+            if (gravity == Gravity.TOP) {
+                out[1] = getDistanceToStart(targetView, getVerticalHelper(lm));
+            } else {
+                out[1] = getDistanceToEnd(targetView, getVerticalHelper(lm));
+            }
+        }
+        return out;
     }
 
     @Override
@@ -226,6 +249,18 @@ public class GravitySnapHelper extends LinearSnapHelper {
     }
 
     /**
+     * Changes the max fling distance in absolute values.
+     *
+     * @param distance max fling distance in pixels
+     *                 or {@link GravitySnapHelper#FLING_DISTANCE_DEFAULT}
+     *                 to reset it to the default value
+     */
+    public void setMaxFlingDistance(@Px int distance) {
+        maxFlingDistance = distance;
+        maxFlingDistanceOffset = FLING_DISTANCE_DEFAULT;
+    }
+
+    /**
      * Changes the max fling distance depending on the available size of the RecyclerView.
      * <p>
      * Example: if you pass 0.5f and the RecyclerView measures 600dp,
@@ -236,10 +271,6 @@ public class GravitySnapHelper extends LinearSnapHelper {
     public void setMaxFlingDistanceFromSize(float offset) {
         maxFlingDistance = FLING_DISTANCE_DEFAULT;
         maxFlingDistanceOffset = offset;
-    }
-
-    public interface SnapListener {
-        void onSnap(int position);
     }
 
     /**
@@ -293,22 +324,6 @@ public class GravitySnapHelper extends LinearSnapHelper {
         }
     }
 
-    private int getMaxFlingDistance() {
-        if (maxFlingDistanceOffset != FLING_DISTANCE_DEFAULT) {
-            if (verticalHelper != null) {
-                return (int) (recyclerView.getHeight() * maxFlingDistanceOffset);
-            } else if (horizontalHelper != null) {
-                return (int) (recyclerView.getWidth() * maxFlingDistanceOffset);
-            } else {
-                return Integer.MAX_VALUE;
-            }
-        } else if (maxFlingDistance != FLING_DISTANCE_DEFAULT) {
-            return maxFlingDistance;
-        } else {
-            return Integer.MAX_VALUE;
-        }
-    }
-
     public void smoothScrollToPosition(int position) {
         scrollTo(position, true);
     }
@@ -339,6 +354,22 @@ public class GravitySnapHelper extends LinearSnapHelper {
             }
         }
         return RecyclerView.NO_POSITION;
+    }
+
+    private int getMaxFlingDistance() {
+        if (maxFlingDistanceOffset != FLING_DISTANCE_DEFAULT) {
+            if (verticalHelper != null) {
+                return (int) (recyclerView.getHeight() * maxFlingDistanceOffset);
+            } else if (horizontalHelper != null) {
+                return (int) (recyclerView.getWidth() * maxFlingDistanceOffset);
+            } else {
+                return Integer.MAX_VALUE;
+            }
+        } else if (maxFlingDistance != FLING_DISTANCE_DEFAULT) {
+            return maxFlingDistance;
+        } else {
+            return Integer.MAX_VALUE;
+        }
     }
 
     private void updateSnap() {

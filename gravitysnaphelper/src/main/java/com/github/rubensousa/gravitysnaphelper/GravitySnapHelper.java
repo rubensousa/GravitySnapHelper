@@ -51,35 +51,16 @@ public class GravitySnapHelper extends LinearSnapHelper {
 
     public static final int FLING_DISTANCE_DEFAULT = -1;
 
-    @Override
-    public int[] calculateDistanceToFinalSnap(@NonNull RecyclerView.LayoutManager layoutManager,
-                                              @NonNull View targetView) {
-        if (gravity == Gravity.CENTER) {
-            return super.calculateDistanceToFinalSnap(layoutManager, targetView);
-        }
-
-        int[] out = new int[2];
-
-        if (!(layoutManager instanceof LinearLayoutManager)) {
-            return out;
-        }
-
-        LinearLayoutManager lm = (LinearLayoutManager) layoutManager;
-
-        if (lm.canScrollHorizontally()) {
-            if ((isRtl && gravity == Gravity.END) || (!isRtl && gravity == Gravity.START)) {
-                out[0] = getDistanceToStart(targetView, getHorizontalHelper(lm));
-            } else {
-                out[0] = getDistanceToEnd(targetView, getHorizontalHelper(lm));
-            }
-        } else if (lm.canScrollVertically()) {
-            if (gravity == Gravity.TOP) {
-                out[1] = getDistanceToStart(targetView, getVerticalHelper(lm));
-            } else {
-                out[1] = getDistanceToEnd(targetView, getVerticalHelper(lm));
-            }
-        }
-        return out;
+    /**
+     * Changes the max fling distance in absolute values.
+     *
+     * @param distance max fling distance in pixels
+     *                 or {@link GravitySnapHelper#FLING_DISTANCE_DEFAULT}
+     *                 to reset it to the default value
+     */
+    public void setMaxFlingDistance(@Px int distance) {
+        maxFlingDistance = distance;
+        maxFlingDistanceOffset = FLING_DISTANCE_DEFAULT;
     }
 
     private int gravity;
@@ -155,19 +136,6 @@ public class GravitySnapHelper extends LinearSnapHelper {
             this.recyclerView = null;
         }
         super.attachToRecyclerView(recyclerView);
-    }
-
-    /**
-     * Changes the max fling distance depending on the available size of the RecyclerView.
-     * <p>
-     * Example: if you pass 0.5f and the RecyclerView measures 600dp,
-     * the max fling distance will be 300dp.
-     *
-     * @param offset size offset to be used for the max fling distance
-     */
-    public void setMaxFlingDistanceFromSize(float offset) {
-        maxFlingDistance = FLING_DISTANCE_DEFAULT;
-        maxFlingDistanceOffset = offset;
     }
 
     @Override
@@ -255,6 +223,23 @@ public class GravitySnapHelper extends LinearSnapHelper {
                 return scrollMsPerInch / displayMetrics.densityDpi;
             }
         };
+    }
+
+    /**
+     * Changes the max fling distance depending on the available size of the RecyclerView.
+     * <p>
+     * Example: if you pass 0.5f and the RecyclerView measures 600dp,
+     * the max fling distance will be 300dp.
+     *
+     * @param offset size offset to be used for the max fling distance
+     */
+    public void setMaxFlingDistanceFromSize(float offset) {
+        maxFlingDistance = FLING_DISTANCE_DEFAULT;
+        maxFlingDistanceOffset = offset;
+    }
+
+    public interface SnapListener {
+        void onSnap(int position);
     }
 
     /**
@@ -427,10 +412,6 @@ public class GravitySnapHelper extends LinearSnapHelper {
         return distance;
     }
 
-    public interface SnapListener {
-        void onSnap(int position);
-    }
-
     /**
      * Returns the first view that we should snap to.
      *
@@ -486,18 +467,6 @@ public class GravitySnapHelper extends LinearSnapHelper {
             }
         }
         return edgeView;
-    }
-
-    /**
-     * Changes the max fling distance in absolute values.
-     *
-     * @param distance max fling distance in pixels
-     *                 or {@link GravitySnapHelper#FLING_DISTANCE_DEFAULT}
-     *                 to reset it to the default value
-     */
-    public void setMaxFlingDistance(@Px int distance) {
-        maxFlingDistance = distance;
-        maxFlingDistanceOffset = FLING_DISTANCE_DEFAULT;
     }
 
     private boolean isAtEndOfList(LinearLayoutManager lm) {

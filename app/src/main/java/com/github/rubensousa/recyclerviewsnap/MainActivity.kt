@@ -78,46 +78,70 @@ class MainActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListener {
             val lists = listOf(
                 SnapList(
                     gravity = Gravity.CENTER,
-                    title = "Snap center",
+                    title = "Center",
+                    showScrollButton = true,
+                    apps = apps
+                ), SnapList(
+                    gravity = Gravity.CENTER,
+                    title = "Center with faster scroll",
+                    scrollMsPerInch = 50f,
+                    showScrollButton = true,
+                    apps = apps
+                ), SnapList(
+                    gravity = Gravity.CENTER,
+                    title = "Center with slower scroll",
+                    scrollMsPerInch = 250f,
+                    showScrollButton = true,
+                    apps = apps
+                ), SnapList(
+                    gravity = Gravity.CENTER,
+                    title = "Center with fling limited",
+                    maxFlingDistance = 0.5f,
+                    scrollMsPerInch = 50f,
                     showScrollButton = true,
                     apps = apps
                 ), SnapList(
                     gravity = Gravity.START,
-                    title = "Snap start",
+                    title = "Start",
+                    showScrollButton = true,
+                    apps = apps
+                ), SnapList(
+                    gravity = Gravity.START,
+                    title = "Start with fling limited",
+                    maxFlingDistance = 0.5f,
+                    scrollMsPerInch = 50f,
                     showScrollButton = true,
                     apps = apps
                 ), SnapList(
                     gravity = Gravity.START,
                     layoutId = R.layout.adapter_snap_padding_start,
                     snapToPadding = true,
-                    title = "Snap start with padding",
+                    title = "Start with padding",
                     showScrollButton = true,
                     apps = apps
                 ), SnapList(
                     gravity = Gravity.START,
                     layoutId = R.layout.adapter_snap_extra_padding_start,
                     snapToPadding = false,
-                    title = "Snap start with large padding",
-                    maxFlingDistance = 1.0f,
+                    title = "Start with large padding",
                     apps = apps
                 ), SnapList(
                     gravity = Gravity.END,
-                    title = "Snap end",
+                    title = "End",
                     showScrollButton = true,
                     apps = apps
                 ), SnapList(
                     gravity = Gravity.END,
                     layoutId = R.layout.adapter_snap_padding_end,
                     snapToPadding = true,
-                    title = "Snap end with padding",
+                    title = "End with padding",
                     showScrollButton = true,
                     apps = apps
                 ), SnapList(
                     gravity = Gravity.END,
                     layoutId = R.layout.adapter_snap_extra_padding_end,
                     snapToPadding = false,
-                    title = "Snap end with large padding",
-                    maxFlingDistance = 1.0f,
+                    title = "End with large padding",
                     apps = apps
                 )
             )
@@ -129,6 +153,8 @@ class MainActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListener {
                 AppAdapter(R.layout.adapter_vertical)
             adapter.setItems(apps)
             recyclerView.adapter = adapter
+            snapHelper.setScrollMsPerInch(50f)
+            snapHelper.setMaxFlingDistanceFromSize(2f)
             snapHelper.attachToRecyclerView(recyclerView)
         }
     }

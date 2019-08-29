@@ -9,6 +9,6 @@ data class SnapList(
     val layoutId: Int = R.layout.adapter_snap,
     val snapToPadding: Boolean = false,
     val showScrollButton: Boolean = false,
-    val maxFlingDistance: Float = 0.5f,
-    val scrollMsPerInch: Float = 50f
+    val maxFlingDistance: Float = 0.0f,
+    val scrollMsPerInch: Float = 100f
 )

@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.rubensousa.gravitysnaphelper.GravitySnapHelper
 import com.github.rubensousa.recyclerviewsnap.adapter.AppAdapter
+import com.github.rubensousa.recyclerviewsnap.model.App
 
 
 class GridActivity : AppCompatActivity() {
@@ -18,11 +19,20 @@ class GridActivity : AppCompatActivity() {
 
         val adapter =
             AppAdapter(R.layout.adapter_vertical)
-        adapter.setItems(MainActivity.getApps())
 
-        recyclerView.layoutManager = GridLayoutManager(this, 2, RecyclerView.VERTICAL, true)
+        val apps = arrayListOf<App>()
+        repeat(5) {
+            apps.addAll(MainActivity.getApps())
+        }
+
+        adapter.setItems(apps)
+
+        recyclerView.layoutManager = GridLayoutManager(this, 2, RecyclerView.VERTICAL, false)
         recyclerView.setHasFixedSize(true)
         recyclerView.adapter = adapter
-        GravitySnapHelper(Gravity.TOP).attachToRecyclerView(recyclerView)
+        val snapHelper = GravitySnapHelper(Gravity.TOP)
+        snapHelper.setScrollMsPerInch(50f)
+        snapHelper.setMaxFlingDistanceFromSize(3f)
+        snapHelper.attachToRecyclerView(recyclerView)
     }
 }

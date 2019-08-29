@@ -23,160 +23,19 @@ class MainActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListener {
 
         fun getApps(): List<App> {
             val apps = ArrayList<App>()
-            apps.add(
-                App(
-                    "Google+",
-                    R.drawable.ic_google_48dp,
-                    4.6f
-                )
-            )
-            apps.add(
-                App(
-                    "Gmail",
-                    R.drawable.ic_gmail_48dp,
-                    4.8f
-                )
-            )
-            apps.add(
-                App(
-                    "Inbox",
-                    R.drawable.ic_inbox_48dp,
-                    4.5f
-                )
-            )
-            apps.add(
-                App(
-                    "Google Keep",
-                    R.drawable.ic_keep_48dp,
-                    4.2f
-                )
-            )
-            apps.add(
-                App(
-                    "Google Drive",
-                    R.drawable.ic_drive_48dp,
-                    4.6f
-                )
-            )
-            apps.add(
-                App(
-                    "Hangouts",
-                    R.drawable.ic_hangouts_48dp,
-                    3.9f
-                )
-            )
-            apps.add(
-                App(
-                    "Google Photos",
-                    R.drawable.ic_photos_48dp,
-                    4.6f
-                )
-            )
-            apps.add(
-                App(
-                    "Messenger",
-                    R.drawable.ic_messenger_48dp,
-                    4.2f
-                )
-            )
-            apps.add(
-                App(
-                    "Sheets",
-                    R.drawable.ic_sheets_48dp,
-                    4.2f
-                )
-            )
-            apps.add(
-                App(
-                    "Slides",
-                    R.drawable.ic_slides_48dp,
-                    4.2f
-                )
-            )
-            apps.add(
-                App(
-                    "Docs",
-                    R.drawable.ic_docs_48dp,
-                    4.2f
-                )
-            )
-            apps.add(
-                App(
-                    "Google+",
-                    R.drawable.ic_google_48dp,
-                    4.6f
-                )
-            )
-            apps.add(
-                App(
-                    "Gmail",
-                    R.drawable.ic_gmail_48dp,
-                    4.8f
-                )
-            )
-            apps.add(
-                App(
-                    "Inbox",
-                    R.drawable.ic_inbox_48dp,
-                    4.5f
-                )
-            )
-            apps.add(
-                App(
-                    "Google Keep",
-                    R.drawable.ic_keep_48dp,
-                    4.2f
-                )
-            )
-            apps.add(
-                App(
-                    "Google Drive",
-                    R.drawable.ic_drive_48dp,
-                    4.6f
-                )
-            )
-            apps.add(
-                App(
-                    "Hangouts",
-                    R.drawable.ic_hangouts_48dp,
-                    3.9f
-                )
-            )
-            apps.add(
-                App(
-                    "Google Photos",
-                    R.drawable.ic_photos_48dp,
-                    4.6f
-                )
-            )
-            apps.add(
-                App(
-                    "Messenger",
-                    R.drawable.ic_messenger_48dp,
-                    4.2f
-                )
-            )
-            apps.add(
-                App(
-                    "Sheets",
-                    R.drawable.ic_sheets_48dp,
-                    4.2f
-                )
-            )
-            apps.add(
-                App(
-                    "Slides",
-                    R.drawable.ic_slides_48dp,
-                    4.2f
-                )
-            )
-            apps.add(
-                App(
-                    "Docs",
-                    R.drawable.ic_docs_48dp,
-                    4.2f
-                )
-            )
+            repeat(2) {
+                apps.add(App("Google+", R.drawable.ic_google_48dp, 4.6f))
+                apps.add(App("Gmail", R.drawable.ic_gmail_48dp, 4.8f))
+                apps.add(App("Inbox", R.drawable.ic_inbox_48dp, 4.5f))
+                apps.add(App("Google Keep", R.drawable.ic_keep_48dp, 4.2f))
+                apps.add(App("Google Drive", R.drawable.ic_drive_48dp, 4.6f))
+                apps.add(App("Hangouts", R.drawable.ic_hangouts_48dp, 3.9f))
+                apps.add(App("Google Photos", R.drawable.ic_photos_48dp, 4.6f))
+                apps.add(App("Messenger", R.drawable.ic_messenger_48dp, 4.2f))
+                apps.add(App("Sheets", R.drawable.ic_sheets_48dp, 4.2f))
+                apps.add(App("Slides", R.drawable.ic_slides_48dp, 4.2f))
+                apps.add(App("Docs", R.drawable.ic_docs_48dp, 4.2f))
+            }
             return apps
         }
     }
@@ -220,6 +79,7 @@ class MainActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListener {
                 SnapList(
                     gravity = Gravity.CENTER,
                     title = "Snap center",
+                    showScrollButton = true,
                     apps = apps
                 ), SnapList(
                     gravity = Gravity.START,
@@ -238,6 +98,7 @@ class MainActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListener {
                     layoutId = R.layout.adapter_snap_extra_padding_start,
                     snapToPadding = false,
                     title = "Snap start with large padding",
+                    maxFlingDistance = 1.0f,
                     apps = apps
                 ), SnapList(
                     gravity = Gravity.END,
@@ -256,10 +117,7 @@ class MainActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListener {
                     layoutId = R.layout.adapter_snap_extra_padding_end,
                     snapToPadding = false,
                     title = "Snap end with large padding",
-                    apps = apps
-                ), SnapList(
-                    gravity = Gravity.CENTER_HORIZONTAL,
-                    title = "GravityPager Snap start",
+                    maxFlingDistance = 1.0f,
                     apps = apps
                 )
             )

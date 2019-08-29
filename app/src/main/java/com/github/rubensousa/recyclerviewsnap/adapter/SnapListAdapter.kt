@@ -1,16 +1,13 @@
 package com.github.rubensousa.recyclerviewsnap.adapter
 
 import android.util.Log
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.SnapHelper
 import com.github.rubensousa.gravitysnaphelper.GravitySnapHelper
 import com.github.rubensousa.recyclerviewsnap.R
 import com.github.rubensousa.recyclerviewsnap.model.SnapList
@@ -51,7 +48,7 @@ class SnapListAdapter : RecyclerView.Adapter<SnapListAdapter.VH>() {
             LinearLayoutManager.HORIZONTAL, false
         )
         private val snapButton: View = view.findViewById(R.id.scrollButton)
-        private var snapHelper: SnapHelper? = null
+        private var snapHelper: GravitySnapHelper? = null
         private var item: SnapList? = null
         private val adapter = AppAdapter()
 
@@ -75,17 +72,12 @@ class SnapListAdapter : RecyclerView.Adapter<SnapListAdapter.VH>() {
             Log.d("Snapped", position.toString())
         }
 
-        private fun getSnapHelper(snapList: SnapList): SnapHelper {
-            if (snapList.gravity == Gravity.START || snapList.gravity == Gravity.END) {
-                val gravitySnapHelper = GravitySnapHelper(snapList.gravity, this)
-                gravitySnapHelper.setSnapToPadding(snapList.snapToPadding)
-                gravitySnapHelper.setScrollMsPerInch(50f)
-                // Max scroll distance = recyclerview width
-                gravitySnapHelper.setMaxScrollDistanceFromSize(1.0f)
-                return gravitySnapHelper
-            } else {
-                return LinearSnapHelper()
-            }
+        private fun getSnapHelper(snapList: SnapList): GravitySnapHelper {
+            val gravitySnapHelper = GravitySnapHelper(snapList.gravity, this)
+            gravitySnapHelper.setSnapToPadding(snapList.snapToPadding)
+            gravitySnapHelper.setScrollMsPerInch(snapList.scrollMsPerInch)
+            gravitySnapHelper.setMaxFlingDistanceFromSize(snapList.maxFlingDistance)
+            return gravitySnapHelper
         }
 
         private fun scrollToNext() {
@@ -94,10 +86,7 @@ class SnapListAdapter : RecyclerView.Adapter<SnapListAdapter.VH>() {
             }
             val currentSnapHelper = snapHelper
             if (currentSnapHelper is GravitySnapHelper) {
-                val referencePosition = if (item!!.gravity == Gravity.START)
-                    layoutManager.findFirstCompletelyVisibleItemPosition()
-                else
-                    layoutManager.findLastCompletelyVisibleItemPosition()
+                val referencePosition = currentSnapHelper.currentSnappedPosition
                 if (referencePosition != RecyclerView.NO_POSITION) {
                     currentSnapHelper.smoothScrollToPosition(referencePosition + 1)
                 }

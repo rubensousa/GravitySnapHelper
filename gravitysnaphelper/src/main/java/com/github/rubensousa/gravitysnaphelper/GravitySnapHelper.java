@@ -144,25 +144,23 @@ public class GravitySnapHelper extends LinearSnapHelper {
 
         switch (gravity) {
             case Gravity.START:
-                snapView = findEdgeView(lm, getHorizontalHelper(lm), true);
+                snapView = findView(lm, getHorizontalHelper(lm), Gravity.START);
                 break;
             case Gravity.END:
-                snapView = findEdgeView(lm, getHorizontalHelper(lm), false);
+                snapView = findView(lm, getHorizontalHelper(lm), Gravity.END);
                 break;
             case Gravity.TOP:
-                snapView = findEdgeView(lm, getVerticalHelper(lm), true);
+                snapView = findView(lm, getVerticalHelper(lm), Gravity.START);
                 break;
             case Gravity.BOTTOM:
-                snapView = findEdgeView(lm, getVerticalHelper(lm), false);
+                snapView = findView(lm, getVerticalHelper(lm), Gravity.END);
                 break;
             case Gravity.CENTER:
-                // Create the orientation helpers
                 if (lm.canScrollHorizontally()) {
-                    getHorizontalHelper(lm);
+                    snapView = findView(lm, getHorizontalHelper(lm), Gravity.CENTER);
                 } else {
-                    getVerticalHelper(lm);
+                    snapView = findView(lm, getVerticalHelper(lm), Gravity.CENTER);
                 }
-                snapView = super.findSnapView(lm);
                 break;
         }
         if (snapView != null) {
@@ -529,14 +527,13 @@ public class GravitySnapHelper extends LinearSnapHelper {
      *
      * @param layoutManager the RecyclerView's LayoutManager
      * @param helper        orientation helper to calculate view sizes
-     * @param start         true if we want the view closest to the start,
-     *                      false if we want the one closest to the end
+     * @param gravity       gravity to find the closest view
      * @return the first view in the LayoutManager to snap to, or null if we shouldn't snap to any
      */
     @Nullable
-    private View findEdgeView(RecyclerView.LayoutManager layoutManager,
-                              OrientationHelper helper,
-                              boolean start) {
+    private View findView(RecyclerView.LayoutManager layoutManager,
+                          OrientationHelper helper,
+                          int gravity) {
 
         if (layoutManager.getChildCount() == 0 || !(layoutManager instanceof LinearLayoutManager)) {
             return null;
@@ -551,19 +548,31 @@ public class GravitySnapHelper extends LinearSnapHelper {
         }
 
         View edgeView = null;
-        int distanceToEdge = Integer.MAX_VALUE;
+        int distanceToTarget = Integer.MAX_VALUE;
+        final int center;
+        if (layoutManager.getClipToPadding()) {
+            center = helper.getStartAfterPadding() + helper.getTotalSpace() / 2;
+        } else {
+            center = helper.getEnd() / 2;
+        }
+
+        final boolean snapToStart = (gravity == Gravity.START && !isRtl)
+                || (gravity == Gravity.END && isRtl);
+
+        final boolean snapToEnd = (gravity == Gravity.START && isRtl)
+                || (gravity == Gravity.END && !isRtl);
 
         for (int i = 0; i < lm.getChildCount(); i++) {
             View currentView = lm.getChildAt(i);
             int currentViewDistance;
-            if ((start && !isRtl) || (!start && isRtl)) {
+            if (snapToStart) {
                 if (!snapToPadding) {
                     currentViewDistance = Math.abs(helper.getDecoratedStart(currentView));
                 } else {
                     currentViewDistance = Math.abs(helper.getStartAfterPadding()
                             - helper.getDecoratedStart(currentView));
                 }
-            } else {
+            } else if (snapToEnd) {
                 if (!snapToPadding) {
                     currentViewDistance = Math.abs(helper.getDecoratedEnd(currentView)
                             - helper.getEnd());
@@ -571,9 +580,12 @@ public class GravitySnapHelper extends LinearSnapHelper {
                     currentViewDistance = Math.abs(helper.getEndAfterPadding()
                             - helper.getDecoratedEnd(currentView));
                 }
+            } else {
+                currentViewDistance = Math.abs(helper.getDecoratedStart(currentView)
+                        + (helper.getDecoratedMeasurement(currentView) / 2) - center);
             }
-            if (currentViewDistance < distanceToEdge) {
-                distanceToEdge = currentViewDistance;
+            if (currentViewDistance < distanceToTarget) {
+                distanceToTarget = currentViewDistance;
                 edgeView = currentView;
             }
         }
@@ -586,6 +598,9 @@ public class GravitySnapHelper extends LinearSnapHelper {
                 || (!lm.getReverseLayout() && gravity == Gravity.TOP)
                 || (lm.getReverseLayout() && gravity == Gravity.BOTTOM)) {
             return lm.findLastCompletelyVisibleItemPosition() == lm.getItemCount() - 1;
+        } else if (gravity == Gravity.CENTER) {
+            return lm.findFirstCompletelyVisibleItemPosition() == 0
+                    || lm.findLastCompletelyVisibleItemPosition() == lm.getItemCount() - 1;
         } else {
             return lm.findFirstCompletelyVisibleItemPosition() == 0;
         }

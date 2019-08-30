@@ -46,11 +46,12 @@ import java.util.Locale;
  * <p>
  * To customize the maximum scroll distance during flings,
  * use {@link GravitySnapHelper#setMaxFlingSizeFraction(float)}
+ * or {@link GravitySnapHelper#setMaxFlingDistance(int)}
  */
 public class GravitySnapHelper extends LinearSnapHelper {
 
-    public static final int FLING_DISTANCE_DEFAULT = -1;
-    public static final float FLING_SIZE_FRACTION_DEFAULT = -1f;
+    public static final int FLING_DISTANCE_DISABLE = -1;
+    public static final float FLING_SIZE_FRACTION_DISABLE = -1f;
 
     /**
      * A listener that's called when the {@link RecyclerView} used by {@link GravitySnapHelper}
@@ -71,8 +72,8 @@ public class GravitySnapHelper extends LinearSnapHelper {
     private boolean isScrolling = false;
     private boolean snapToPadding = false;
     private float scrollMsPerInch = 100f;
-    private int maxFlingDistance = FLING_DISTANCE_DEFAULT;
-    private float maxFlingSizeFraction = FLING_SIZE_FRACTION_DEFAULT;
+    private int maxFlingDistance = FLING_DISTANCE_DISABLE;
+    private float maxFlingSizeFraction = FLING_SIZE_FRACTION_DISABLE;
     private OrientationHelper verticalHelper;
     private OrientationHelper horizontalHelper;
     private GravitySnapHelper.SnapListener listener;
@@ -209,8 +210,8 @@ public class GravitySnapHelper extends LinearSnapHelper {
     public int[] calculateScrollDistance(int velocityX, int velocityY) {
         if (recyclerView == null
                 || (verticalHelper == null && horizontalHelper == null)
-                || (maxFlingDistance == FLING_DISTANCE_DEFAULT
-                && maxFlingSizeFraction == FLING_SIZE_FRACTION_DEFAULT)) {
+                || (maxFlingDistance == FLING_DISTANCE_DISABLE
+                && maxFlingSizeFraction == FLING_SIZE_FRACTION_DISABLE)) {
             return super.calculateScrollDistance(velocityX, velocityY);
         }
         final int[] out = new int[2];
@@ -271,12 +272,12 @@ public class GravitySnapHelper extends LinearSnapHelper {
      * Changes the max fling distance in absolute values.
      *
      * @param distance max fling distance in pixels
-     *                 or {@link GravitySnapHelper#FLING_DISTANCE_DEFAULT}
-     *                 to reset it to the default value
+     *                 or {@link GravitySnapHelper#FLING_DISTANCE_DISABLE}
+     *                 to disable fling limits
      */
     public void setMaxFlingDistance(@Px int distance) {
         maxFlingDistance = distance;
-        maxFlingSizeFraction = FLING_SIZE_FRACTION_DEFAULT;
+        maxFlingSizeFraction = FLING_SIZE_FRACTION_DISABLE;
     }
 
     /**
@@ -286,9 +287,11 @@ public class GravitySnapHelper extends LinearSnapHelper {
      * the max fling distance will be 300dp.
      *
      * @param fraction size fraction to be used for the max fling distance
+     *                 or {@link GravitySnapHelper#FLING_SIZE_FRACTION_DISABLE}
+     *                 to disable fling limits
      */
     public void setMaxFlingSizeFraction(float fraction) {
-        maxFlingDistance = FLING_DISTANCE_DEFAULT;
+        maxFlingDistance = FLING_DISTANCE_DISABLE;
         maxFlingSizeFraction = fraction;
     }
 
@@ -299,7 +302,7 @@ public class GravitySnapHelper extends LinearSnapHelper {
      *
      * @param snap true if you want to enable snapping of the last snappable item
      */
-    public void enableLastItemSnap(boolean snap) {
+    public void setSnapLastItem(boolean snap) {
         snapLastItem = snap;
     }
 
@@ -376,6 +379,45 @@ public class GravitySnapHelper extends LinearSnapHelper {
     }
 
     /**
+     * @return true if this SnapHelper should snap to the last item
+     */
+    public boolean getSnapLastItem() {
+        return snapLastItem;
+    }
+
+    /**
+     * @return last distance set through {@link GravitySnapHelper#setMaxFlingDistance(int)}
+     * or {@link GravitySnapHelper#FLING_DISTANCE_DISABLE} if we're not limiting the fling distance
+     */
+    public int getMaxFlingDistance() {
+        return maxFlingDistance;
+    }
+
+    /**
+     * @return last distance set through {@link GravitySnapHelper#setMaxFlingSizeFraction(float)}
+     * or {@link GravitySnapHelper#FLING_SIZE_FRACTION_DISABLE}
+     * if we're not limiting the fling distance
+     */
+    public float getMaxFlingSizeFraction() {
+        return maxFlingSizeFraction;
+    }
+
+    /**
+     * @return last scroll speed set through {@link GravitySnapHelper#setScrollMsPerInch(float)}
+     * or 100f
+     */
+    public float getScrollMsPerInch() {
+        return scrollMsPerInch;
+    }
+
+    /**
+     * @return true if this SnapHelper should snap to the padding. Defaults to false.
+     */
+    public boolean getSnapToPadding() {
+        return snapToPadding;
+    }
+
+    /**
      * @return the position of the current view that's snapped
      * or {@link RecyclerView#NO_POSITION} in case there's none.
      */
@@ -390,7 +432,7 @@ public class GravitySnapHelper extends LinearSnapHelper {
     }
 
     private int getFlingDistance() {
-        if (maxFlingSizeFraction != FLING_SIZE_FRACTION_DEFAULT) {
+        if (maxFlingSizeFraction != FLING_SIZE_FRACTION_DISABLE) {
             if (verticalHelper != null) {
                 return (int) (recyclerView.getHeight() * maxFlingSizeFraction);
             } else if (horizontalHelper != null) {
@@ -398,7 +440,7 @@ public class GravitySnapHelper extends LinearSnapHelper {
             } else {
                 return Integer.MAX_VALUE;
             }
-        } else if (maxFlingDistance != FLING_DISTANCE_DEFAULT) {
+        } else if (maxFlingDistance != FLING_DISTANCE_DISABLE) {
             return maxFlingDistance;
         } else {
             return Integer.MAX_VALUE;

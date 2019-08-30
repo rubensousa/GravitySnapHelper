@@ -70,12 +70,12 @@ public class GravitySnapRecyclerView extends OrientationAwareRecyclerView {
         snapHelper.setSnapToPadding(typedArray.getBoolean(
                 R.styleable.GravitySnapRecyclerView_snapToPadding, false));
 
-        snapHelper.enableLastItemSnap(typedArray.getBoolean(
+        snapHelper.setSnapLastItem(typedArray.getBoolean(
                 R.styleable.GravitySnapRecyclerView_snapLastItem, false));
 
         snapHelper.setMaxFlingSizeFraction(typedArray.getFloat(
                 R.styleable.GravitySnapRecyclerView_snapMaxFlingSizeFraction,
-                GravitySnapHelper.FLING_SIZE_FRACTION_DEFAULT));
+                GravitySnapHelper.FLING_SIZE_FRACTION_DISABLE));
 
         snapHelper.setScrollMsPerInch(typedArray.getFloat(
                 R.styleable.GravitySnapRecyclerView_snapScrollMsPerInch, 100f));

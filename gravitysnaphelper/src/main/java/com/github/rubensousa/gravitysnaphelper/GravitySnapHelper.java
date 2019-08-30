@@ -352,6 +352,9 @@ public class GravitySnapHelper extends LinearSnapHelper {
      * @return true if scroll was successful, false otherwise
      */
     public boolean scrollToPosition(int position) {
+        if (position == RecyclerView.NO_POSITION) {
+            return false;
+        }
         return scrollTo(position, false);
     }
 
@@ -365,6 +368,9 @@ public class GravitySnapHelper extends LinearSnapHelper {
      * @return true if scroll was successful, false otherwise
      */
     public boolean smoothScrollToPosition(int position) {
+        if (position == RecyclerView.NO_POSITION) {
+            return false;
+        }
         return scrollTo(position, true);
     }
 

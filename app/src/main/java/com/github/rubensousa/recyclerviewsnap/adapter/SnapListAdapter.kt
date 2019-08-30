@@ -48,19 +48,21 @@ class SnapListAdapter : RecyclerView.Adapter<SnapListAdapter.VH>() {
             view.context,
             LinearLayoutManager.HORIZONTAL, false
         )
-        private val snapButton: View = view.findViewById(R.id.scrollButton)
+        private val snapNextButton: View = view.findViewById(R.id.scrollNextButton)
+        private val snapPreviousButton: View = view.findViewById(R.id.scrollPreviousButton)
         private var item: SnapList? = null
         private val adapter = AppAdapter()
 
         init {
             recyclerView.layoutManager = layoutManager
             recyclerView.adapter = adapter
-            snapButton.setOnClickListener { scrollToNext() }
+            snapNextButton.setOnClickListener { scrollToNext() }
+            snapPreviousButton.setOnClickListener { scrollToPrevious() }
         }
 
         fun bind(snapList: SnapList) {
             item = snapList
-            snapButton.isVisible = snapList.showScrollButton
+            snapNextButton.isVisible = snapList.showScrollButtons
             titleView.text = snapList.title
             adapter.setItems(snapList.apps)
             val snapHelper = recyclerView.snapHelper
@@ -72,16 +74,20 @@ class SnapListAdapter : RecyclerView.Adapter<SnapListAdapter.VH>() {
         }
 
         override fun onSnap(position: Int) {
-            Log.d("Snapped", position.toString())
+            Log.d("Snapped ${item?.title}", position.toString())
         }
 
         private fun scrollToNext() {
-            if (item == null) {
-                return
-            }
             val referencePosition = recyclerView.currentSnappedPosition
             if (referencePosition != RecyclerView.NO_POSITION) {
                 recyclerView.smoothScrollToPosition(referencePosition + 1)
+            }
+        }
+
+        private fun scrollToPrevious() {
+            val referencePosition = recyclerView.currentSnappedPosition
+            if (referencePosition > 0) {
+                recyclerView.smoothScrollToPosition(referencePosition - 1)
             }
         }
     }

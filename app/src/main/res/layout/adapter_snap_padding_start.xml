@@ -19,14 +19,24 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Snap center" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/scrollButton"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
+    <ImageButton
+        android:id="@+id/scrollPreviousButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:text="Scroll +1"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_previous"
+        app:layout_constraintBottom_toBottomOf="@id/snapTextView"
+        app:layout_constraintEnd_toStartOf="@id/scrollNextButton"
+        app:layout_constraintTop_toTopOf="@id/snapTextView" />
+
+    <ImageButton
+        android:id="@+id/scrollNextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_next"
         app:layout_constraintBottom_toBottomOf="@id/snapTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/snapTextView" />

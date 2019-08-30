@@ -9,7 +9,7 @@ data class SnapList(
     val apps: List<App>,
     val layoutId: Int = R.layout.adapter_snap,
     val snapToPadding: Boolean = false,
-    val showScrollButton: Boolean = false,
+    val showScrollButtons: Boolean = true,
     val maxFlingSizeFraction: Float = GravitySnapHelper.FLING_SIZE_FRACTION_DISABLE,
     val scrollMsPerInch: Float = 100f
 )

@@ -45,11 +45,12 @@ import java.util.Locale;
  * To customize the scroll duration, use {@link GravitySnapHelper#setScrollMsPerInch(float)}.
  * <p>
  * To customize the maximum scroll distance during flings,
- * use {@link GravitySnapHelper#setMaxFlingDistanceFromSize(float)}
+ * use {@link GravitySnapHelper#setMaxFlingSizeFraction(float)}
  */
 public class GravitySnapHelper extends LinearSnapHelper {
 
     public static final int FLING_DISTANCE_DEFAULT = -1;
+    public static final float FLING_SIZE_FRACTION_DEFAULT = -1f;
 
     public interface SnapListener {
         void onSnap(int position);
@@ -58,12 +59,12 @@ public class GravitySnapHelper extends LinearSnapHelper {
     private int gravity;
     private boolean isRtl;
     private boolean snapLastItem;
-    private int currentSnappedPosition;
+    private int nextSnapPosition;
     private boolean isScrolling = false;
     private boolean snapToPadding = false;
     private float scrollMsPerInch = 100f;
-    private int maxFlingDistance = GravitySnapHelper.FLING_DISTANCE_DEFAULT;
-    private float maxFlingDistanceOffset = GravitySnapHelper.FLING_DISTANCE_DEFAULT;
+    private int maxFlingDistance = FLING_DISTANCE_DEFAULT;
+    private float maxFlingSizeFraction = FLING_SIZE_FRACTION_DEFAULT;
     private OrientationHelper verticalHelper;
     private OrientationHelper horizontalHelper;
     private GravitySnapHelper.SnapListener listener;
@@ -73,13 +74,25 @@ public class GravitySnapHelper extends LinearSnapHelper {
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             super.onScrollStateChanged(recyclerView, newState);
             if (newState == RecyclerView.SCROLL_STATE_IDLE && listener != null) {
-                if (currentSnappedPosition != RecyclerView.NO_POSITION && isScrolling) {
-                    listener.onSnap(currentSnappedPosition);
+                if (nextSnapPosition != RecyclerView.NO_POSITION && isScrolling) {
+                    listener.onSnap(nextSnapPosition);
                 }
             }
             isScrolling = newState != RecyclerView.SCROLL_STATE_IDLE;
         }
     };
+
+    public GravitySnapHelper(int gravity) {
+        this(gravity, false, null);
+    }
+
+    public GravitySnapHelper(int gravity, @NonNull SnapListener snapListener) {
+        this(gravity, false, snapListener);
+    }
+
+    public GravitySnapHelper(int gravity, boolean enableSnapLastItem) {
+        this(gravity, enableSnapLastItem, null);
+    }
 
     public GravitySnapHelper(int gravity, boolean enableSnapLastItem,
                              @Nullable SnapListener snapListener) {
@@ -94,18 +107,6 @@ public class GravitySnapHelper extends LinearSnapHelper {
         this.snapLastItem = enableSnapLastItem;
         this.gravity = gravity;
         this.listener = snapListener;
-    }
-
-    public GravitySnapHelper(int gravity) {
-        this(gravity, false, null);
-    }
-
-    public GravitySnapHelper(int gravity, @NonNull SnapListener snapListener) {
-        this(gravity, false, snapListener);
-    }
-
-    public GravitySnapHelper(int gravity, boolean enableSnapLastItem) {
-        this(gravity, enableSnapLastItem, null);
     }
 
     @Override
@@ -158,9 +159,9 @@ public class GravitySnapHelper extends LinearSnapHelper {
                 break;
         }
         if (snapView != null) {
-            currentSnappedPosition = recyclerView.getChildAdapterPosition(snapView);
+            nextSnapPosition = recyclerView.getChildAdapterPosition(snapView);
         } else {
-            currentSnappedPosition = RecyclerView.NO_POSITION;
+            nextSnapPosition = RecyclerView.NO_POSITION;
         }
         return snapView;
     }
@@ -200,7 +201,8 @@ public class GravitySnapHelper extends LinearSnapHelper {
     public int[] calculateScrollDistance(int velocityX, int velocityY) {
         if (recyclerView == null
                 || (verticalHelper == null && horizontalHelper == null)
-                || (maxFlingDistance == -1 && maxFlingDistanceOffset == 0f)) {
+                || (maxFlingDistance == FLING_DISTANCE_DEFAULT
+                && maxFlingSizeFraction == FLING_SIZE_FRACTION_DEFAULT)) {
             return super.calculateScrollDistance(velocityX, velocityY);
         }
         final int[] out = new int[2];
@@ -257,7 +259,7 @@ public class GravitySnapHelper extends LinearSnapHelper {
      */
     public void setMaxFlingDistance(@Px int distance) {
         maxFlingDistance = distance;
-        maxFlingDistanceOffset = FLING_DISTANCE_DEFAULT;
+        maxFlingSizeFraction = FLING_SIZE_FRACTION_DEFAULT;
     }
 
     /**
@@ -266,11 +268,11 @@ public class GravitySnapHelper extends LinearSnapHelper {
      * Example: if you pass 0.5f and the RecyclerView measures 600dp,
      * the max fling distance will be 300dp.
      *
-     * @param offset size offset to be used for the max fling distance
+     * @param fraction size fraction to be used for the max fling distance
      */
-    public void setMaxFlingDistanceFromSize(float offset) {
+    public void setMaxFlingSizeFraction(float fraction) {
         maxFlingDistance = FLING_DISTANCE_DEFAULT;
-        maxFlingDistanceOffset = offset;
+        maxFlingSizeFraction = fraction;
     }
 
     /**
@@ -324,12 +326,26 @@ public class GravitySnapHelper extends LinearSnapHelper {
         }
     }
 
-    public void smoothScrollToPosition(int position) {
-        scrollTo(position, true);
+    /**
+     * This method will only work if there's a ViewHolder for the given position.
+     *
+     * @return true if scroll was successful, false otherwise
+     */
+    public boolean scrollToPosition(int position) {
+        return scrollTo(position, false);
     }
 
-    public void scrollToPosition(int position) {
-        scrollTo(position, false);
+    /**
+     * Unlike {@link GravitySnapHelper#scrollToPosition(int)},
+     * this method will generally always find a snap view if the position is valid.
+     * <p>
+     * The smooth scroller from {@link GravitySnapHelper#createScroller(RecyclerView.LayoutManager)}
+     * will be used, and so will {@link GravitySnapHelper#scrollMsPerInch} for the scroll velocity
+     *
+     * @return true if scroll was successful, false otherwise
+     */
+    public boolean smoothScrollToPosition(int position) {
+        return scrollTo(position, true);
     }
 
     /**
@@ -357,11 +373,11 @@ public class GravitySnapHelper extends LinearSnapHelper {
     }
 
     private int getMaxFlingDistance() {
-        if (maxFlingDistanceOffset != FLING_DISTANCE_DEFAULT) {
+        if (maxFlingSizeFraction != FLING_SIZE_FRACTION_DEFAULT) {
             if (verticalHelper != null) {
-                return (int) (recyclerView.getHeight() * maxFlingDistanceOffset);
+                return (int) (recyclerView.getHeight() * maxFlingSizeFraction);
             } else if (horizontalHelper != null) {
-                return (int) (recyclerView.getWidth() * maxFlingDistanceOffset);
+                return (int) (recyclerView.getWidth() * maxFlingSizeFraction);
             } else {
                 return Integer.MAX_VALUE;
             }
@@ -385,7 +401,10 @@ public class GravitySnapHelper extends LinearSnapHelper {
         }
     }
 
-    private void scrollTo(int position, boolean smooth) {
+    /**
+     * @return true if the scroll will snap to a view, false otherwise
+     */
+    private boolean scrollTo(int position, boolean smooth) {
         if (recyclerView.getLayoutManager() != null) {
             if (smooth) {
                 RecyclerView.SmoothScroller smoothScroller
@@ -393,8 +412,7 @@ public class GravitySnapHelper extends LinearSnapHelper {
                 if (smoothScroller != null) {
                     smoothScroller.setTargetPosition(position);
                     recyclerView.getLayoutManager().startSmoothScroll(smoothScroller);
-                } else {
-                    recyclerView.smoothScrollToPosition(position);
+                    return true;
                 }
             } else {
                 RecyclerView.ViewHolder viewHolder
@@ -403,11 +421,11 @@ public class GravitySnapHelper extends LinearSnapHelper {
                     int[] distances = calculateDistanceToFinalSnap(recyclerView.getLayoutManager(),
                             viewHolder.itemView);
                     recyclerView.scrollBy(distances[0], distances[1]);
-                } else {
-                    recyclerView.scrollToPosition(position);
+                    return true;
                 }
             }
         }
+        return false;
     }
 
     private int getDistanceToStart(View targetView, @NonNull OrientationHelper helper) {
@@ -450,7 +468,7 @@ public class GravitySnapHelper extends LinearSnapHelper {
      * @param helper        orientation helper to calculate view sizes
      * @param start         true if we want the view closest to the start,
      *                      false if we want the one closest to the end
-     * @return the first view in the LayoutManager to snap to
+     * @return the first view in the LayoutManager to snap to, or null if we shouldn't snap to any
      */
     @Nullable
     private View findEdgeView(RecyclerView.LayoutManager layoutManager,
@@ -490,7 +508,6 @@ public class GravitySnapHelper extends LinearSnapHelper {
                     currentViewDistance = Math.abs(helper.getEndAfterPadding()
                             - helper.getDecoratedEnd(currentView));
                 }
-
             }
             if (currentViewDistance < distanceToEdge) {
                 distanceToEdge = currentViewDistance;

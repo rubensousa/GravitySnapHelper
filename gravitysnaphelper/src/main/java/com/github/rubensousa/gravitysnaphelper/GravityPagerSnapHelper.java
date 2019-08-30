@@ -22,7 +22,7 @@ import androidx.annotation.Nullable;
 /**
  * A {@link GravitySnapHelper} that sets a default max scroll distance
  * of the size of the RecyclerView by setting
- * {@link GravitySnapHelper#setMaxFlingDistanceFromSize(float)} to 1.0f by default
+ * {@link GravitySnapHelper#setMaxFlingSizeFraction(float)} to 1.0f by default
  *
  * @deprecated Use {@link GravitySnapHelper} instead
  */
@@ -36,7 +36,7 @@ public class GravityPagerSnapHelper extends GravitySnapHelper {
     public GravityPagerSnapHelper(int gravity,
                                   @Nullable GravitySnapHelper.SnapListener snapListener) {
         super(gravity, false, snapListener);
-        setMaxFlingDistanceFromSize(1.0f);
+        setMaxFlingSizeFraction(1.0f);
         setScrollMsPerInch(50f);
     }
 }

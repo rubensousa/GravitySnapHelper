@@ -130,9 +130,7 @@ public class GravitySnapHelper extends LinearSnapHelper {
                 isRtl = TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault())
                         == ViewCompat.LAYOUT_DIRECTION_RTL;
             }
-            if (listener != null) {
-                recyclerView.addOnScrollListener(scrollListener);
-            }
+            recyclerView.addOnScrollListener(scrollListener);
             this.recyclerView = recyclerView;
         } else {
             this.recyclerView = null;

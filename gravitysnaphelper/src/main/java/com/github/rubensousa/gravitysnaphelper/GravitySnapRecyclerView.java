@@ -116,4 +116,8 @@ public class GravitySnapRecyclerView extends OrientationAwareRecyclerView {
     public int getCurrentSnappedPosition() {
         return snapHelper.getCurrentSnappedPosition();
     }
+
+    public void setSnapListener(@Nullable GravitySnapHelper.SnapListener listener) {
+        snapHelper.setSnapListener(listener);
+    }
 }

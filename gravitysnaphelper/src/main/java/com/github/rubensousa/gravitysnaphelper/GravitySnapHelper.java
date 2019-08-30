@@ -52,7 +52,15 @@ public class GravitySnapHelper extends LinearSnapHelper {
     public static final int FLING_DISTANCE_DEFAULT = -1;
     public static final float FLING_SIZE_FRACTION_DEFAULT = -1f;
 
+    /**
+     * A listener that's called when the {@link RecyclerView} used by {@link GravitySnapHelper}
+     * changes its scroll state to {@link RecyclerView#SCROLL_STATE_IDLE}
+     * and there's a valid snap position.
+     */
     public interface SnapListener {
+        /**
+         * @param position last position snapped to
+         */
         void onSnap(int position);
     }
 
@@ -208,7 +216,7 @@ public class GravitySnapHelper extends LinearSnapHelper {
         final int[] out = new int[2];
         Scroller scroller = new Scroller(recyclerView.getContext(),
                 new DecelerateInterpolator());
-        int maxDistance = getMaxFlingDistance();
+        int maxDistance = getFlingDistance();
         scroller.fling(0, 0, velocityX, velocityY,
                 -maxDistance, maxDistance,
                 -maxDistance, maxDistance);
@@ -248,6 +256,15 @@ public class GravitySnapHelper extends LinearSnapHelper {
                 return scrollMsPerInch / displayMetrics.densityDpi;
             }
         };
+    }
+
+    /**
+     * Sets a {@link SnapListener} to listen for snap events
+     *
+     * @param listener a {@link SnapListener} that'll receive snap events or null to clear it
+     */
+    public void setSnapListener(@Nullable SnapListener listener) {
+        this.listener = listener;
     }
 
     /**
@@ -372,7 +389,7 @@ public class GravitySnapHelper extends LinearSnapHelper {
         return RecyclerView.NO_POSITION;
     }
 
-    private int getMaxFlingDistance() {
+    private int getFlingDistance() {
         if (maxFlingSizeFraction != FLING_SIZE_FRACTION_DEFAULT) {
             if (verticalHelper != null) {
                 return (int) (recyclerView.getHeight() * maxFlingSizeFraction);

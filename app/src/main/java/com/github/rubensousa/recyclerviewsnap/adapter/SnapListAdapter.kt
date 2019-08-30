@@ -63,10 +63,12 @@ class SnapListAdapter : RecyclerView.Adapter<SnapListAdapter.VH>() {
             snapButton.isVisible = snapList.showScrollButton
             titleView.text = snapList.title
             adapter.setItems(snapList.apps)
-            recyclerView.snapHelper.gravity = snapList.gravity
-            recyclerView.snapHelper.setScrollMsPerInch(snapList.scrollMsPerInch)
-            recyclerView.snapHelper.setMaxFlingSizeFraction(snapList.maxFlingSizeFraction)
-            recyclerView.snapHelper.setSnapToPadding(snapList.snapToPadding)
+            val snapHelper = recyclerView.snapHelper
+            snapHelper.snapLastItem = false
+            snapHelper.gravity = snapList.gravity
+            snapHelper.scrollMsPerInch = snapList.scrollMsPerInch
+            snapHelper.maxFlingSizeFraction = snapList.maxFlingSizeFraction
+            snapHelper.snapToPadding = snapList.snapToPadding
         }
 
         override fun onSnap(position: Int) {

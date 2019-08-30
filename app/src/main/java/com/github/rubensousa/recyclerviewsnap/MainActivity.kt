@@ -90,13 +90,13 @@ class MainActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListener {
                 ), SnapList(
                     gravity = Gravity.CENTER,
                     title = "Center with slower scroll",
-                    scrollMsPerInch = 250f,
+                    scrollMsPerInch = 200f,
                     showScrollButton = true,
                     apps = apps
                 ), SnapList(
                     gravity = Gravity.CENTER,
                     title = "Center with fling limited",
-                    maxFlingDistance = 0.5f,
+                    maxFlingSizeFraction = 0.5f,
                     scrollMsPerInch = 50f,
                     showScrollButton = true,
                     apps = apps
@@ -108,7 +108,7 @@ class MainActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListener {
                 ), SnapList(
                     gravity = Gravity.START,
                     title = "Start with fling limited",
-                    maxFlingDistance = 0.5f,
+                    maxFlingSizeFraction = 0.5f,
                     scrollMsPerInch = 50f,
                     showScrollButton = true,
                     apps = apps
@@ -154,7 +154,7 @@ class MainActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListener {
             adapter.setItems(apps)
             recyclerView.adapter = adapter
             snapHelper.setScrollMsPerInch(50f)
-            snapHelper.setMaxFlingDistanceFromSize(2f)
+            snapHelper.setMaxFlingSizeFraction(2f)
             snapHelper.attachToRecyclerView(recyclerView)
         }
     }

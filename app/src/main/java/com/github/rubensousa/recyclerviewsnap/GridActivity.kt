@@ -32,7 +32,7 @@ class GridActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
         val snapHelper = GravitySnapHelper(Gravity.TOP)
         snapHelper.setScrollMsPerInch(50f)
-        snapHelper.setMaxFlingDistanceFromSize(3f)
+        snapHelper.setMaxFlingSizeFraction(3f)
         snapHelper.attachToRecyclerView(recyclerView)
     }
 }

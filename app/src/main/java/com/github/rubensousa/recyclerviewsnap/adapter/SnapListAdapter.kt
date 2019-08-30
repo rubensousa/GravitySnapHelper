@@ -9,6 +9,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.rubensousa.gravitysnaphelper.GravitySnapHelper
+import com.github.rubensousa.gravitysnaphelper.GravitySnapRecyclerView
 import com.github.rubensousa.recyclerviewsnap.R
 import com.github.rubensousa.recyclerviewsnap.model.SnapList
 
@@ -42,13 +43,12 @@ class SnapListAdapter : RecyclerView.Adapter<SnapListAdapter.VH>() {
     class VH(view: View) : RecyclerView.ViewHolder(view), GravitySnapHelper.SnapListener {
 
         private val titleView: TextView = view.findViewById(R.id.snapTextView)
-        private val recyclerView: RecyclerView = view.findViewById(R.id.recyclerView)
+        private val recyclerView: GravitySnapRecyclerView = view.findViewById(R.id.recyclerView)
         private val layoutManager = LinearLayoutManager(
             view.context,
             LinearLayoutManager.HORIZONTAL, false
         )
         private val snapButton: View = view.findViewById(R.id.scrollButton)
-        private var snapHelper: GravitySnapHelper? = null
         private var item: SnapList? = null
         private val adapter = AppAdapter()
 
@@ -63,33 +63,23 @@ class SnapListAdapter : RecyclerView.Adapter<SnapListAdapter.VH>() {
             snapButton.isVisible = snapList.showScrollButton
             titleView.text = snapList.title
             adapter.setItems(snapList.apps)
-            snapHelper?.attachToRecyclerView(null)
-            snapHelper = getSnapHelper(snapList)
-            snapHelper?.attachToRecyclerView(recyclerView)
+            recyclerView.snapHelper.gravity = snapList.gravity
+            recyclerView.snapHelper.setScrollMsPerInch(snapList.scrollMsPerInch)
+            recyclerView.snapHelper.setMaxFlingSizeFraction(snapList.maxFlingSizeFraction)
+            recyclerView.snapHelper.setSnapToPadding(snapList.snapToPadding)
         }
 
         override fun onSnap(position: Int) {
             Log.d("Snapped", position.toString())
         }
 
-        private fun getSnapHelper(snapList: SnapList): GravitySnapHelper {
-            val gravitySnapHelper = GravitySnapHelper(snapList.gravity, this)
-            gravitySnapHelper.setSnapToPadding(snapList.snapToPadding)
-            gravitySnapHelper.setScrollMsPerInch(snapList.scrollMsPerInch)
-            gravitySnapHelper.setMaxFlingDistanceFromSize(snapList.maxFlingDistance)
-            return gravitySnapHelper
-        }
-
         private fun scrollToNext() {
             if (item == null) {
                 return
             }
-            val currentSnapHelper = snapHelper
-            if (currentSnapHelper is GravitySnapHelper) {
-                val referencePosition = currentSnapHelper.currentSnappedPosition
-                if (referencePosition != RecyclerView.NO_POSITION) {
-                    currentSnapHelper.smoothScrollToPosition(referencePosition + 1)
-                }
+            val referencePosition = recyclerView.currentSnappedPosition
+            if (referencePosition != RecyclerView.NO_POSITION) {
+                recyclerView.smoothScrollToPosition(referencePosition + 1)
             }
         }
     }

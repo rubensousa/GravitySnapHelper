@@ -1,5 +1,6 @@
 package com.github.rubensousa.recyclerviewsnap.model
 
+import com.github.rubensousa.gravitysnaphelper.GravitySnapHelper
 import com.github.rubensousa.recyclerviewsnap.R
 
 data class SnapList(
@@ -9,6 +10,6 @@ data class SnapList(
     val layoutId: Int = R.layout.adapter_snap,
     val snapToPadding: Boolean = false,
     val showScrollButton: Boolean = false,
-    val maxFlingDistance: Float = 0.0f,
+    val maxFlingSizeFraction: Float = GravitySnapHelper.FLING_SIZE_FRACTION_DEFAULT,
     val scrollMsPerInch: Float = 100f
 )

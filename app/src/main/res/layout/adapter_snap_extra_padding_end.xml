@@ -32,7 +32,7 @@
         app:layout_constraintTop_toTopOf="@id/snapTextView" />
 
 
-    <com.github.rubensousa.gravitysnaphelper.OrientationAwareRecyclerView
+    <com.github.rubensousa.gravitysnaphelper.GravitySnapRecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

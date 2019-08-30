@@ -58,6 +58,7 @@ class SnapListAdapter : RecyclerView.Adapter<SnapListAdapter.VH>() {
             recyclerView.adapter = adapter
             snapNextButton.setOnClickListener { scrollToNext() }
             snapPreviousButton.setOnClickListener { scrollToPrevious() }
+            recyclerView.setSnapListener(this)
         }
 
         fun bind(snapList: SnapList) {

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -13,34 +14,40 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:text="Snap center"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Snap center" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/scrollButton"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:text="Scroll +1"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+    <ImageButton
+        android:id="@+id/scrollPreviousButton"
+        style="@style/PreviousButtonStyle"
+        app:layout_constraintBottom_toBottomOf="@id/snapTextView"
+        app:layout_constraintEnd_toStartOf="@id/scrollNextButton"
+        app:layout_constraintTop_toTopOf="@id/snapTextView" />
+
+    <ImageButton
+        android:id="@+id/scrollNextButton"
+        style="@style/NextButtonStyle"
         app:layout_constraintBottom_toBottomOf="@id/snapTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/snapTextView" />
 
 
-    <com.github.rubensousa.gravitysnaphelper.OrientationAwareRecyclerView
+    <com.github.rubensousa.gravitysnaphelper.GravitySnapRecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:clipToPadding="false"
-        android:padding="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/scrollButton" />
+        app:layout_constraintTop_toBottomOf="@id/snapTextView"
+        app:snapEnabled="true"
+        app:snapGravity="start"
+        app:snapLastItem="false"
+        app:snapMaxFlingSizeFraction="0.5"
+        app:snapScrollMsPerInch="50"
+        app:snapToPadding="false" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

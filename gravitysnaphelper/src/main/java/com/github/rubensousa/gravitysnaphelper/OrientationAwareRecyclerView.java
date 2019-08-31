@@ -43,8 +43,8 @@ public class OrientationAwareRecyclerView extends RecyclerView {
     }
 
     public OrientationAwareRecyclerView(@NonNull Context context, @Nullable AttributeSet attrs,
-                                        int defStyle) {
-        super(context, attrs, defStyle);
+                                        int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
         addOnScrollListener(new OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {

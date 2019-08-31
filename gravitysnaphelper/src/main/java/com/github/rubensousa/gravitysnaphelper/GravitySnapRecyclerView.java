@@ -34,6 +34,8 @@ public class GravitySnapRecyclerView extends OrientationAwareRecyclerView {
     @NonNull
     final private GravitySnapHelper snapHelper;
 
+    private boolean isSnappingEnabled = false;
+
     public GravitySnapRecyclerView(@NonNull Context context) {
         this(context, null);
     }
@@ -90,14 +92,14 @@ public class GravitySnapRecyclerView extends OrientationAwareRecyclerView {
 
     @Override
     public void smoothScrollToPosition(int position) {
-        if (!snapHelper.smoothScrollToPosition(position)) {
+        if (!isSnappingEnabled || !snapHelper.smoothScrollToPosition(position)) {
             super.smoothScrollToPosition(position);
         }
     }
 
     @Override
     public void scrollToPosition(int position) {
-        if (!snapHelper.scrollToPosition(position)) {
+        if (!isSnappingEnabled || !snapHelper.scrollToPosition(position)) {
             super.scrollToPosition(position);
         }
     }
@@ -113,6 +115,11 @@ public class GravitySnapRecyclerView extends OrientationAwareRecyclerView {
         } else {
             snapHelper.attachToRecyclerView(null);
         }
+        isSnappingEnabled = enable;
+    }
+
+    public boolean isSnappingEnabled() {
+        return isSnappingEnabled;
     }
 
     public int getCurrentSnappedPosition() {

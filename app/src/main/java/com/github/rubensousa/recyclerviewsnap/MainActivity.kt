@@ -102,13 +102,13 @@ class MainActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListener {
             ), SnapList(
                 gravity = Gravity.CENTER,
                 title = "Center with fling limited",
-                maxFlingSizeFraction = 0.5f,
+                maxFlingSizeFraction = 1.0f, // Max fling = recyclerview width
                 scrollMsPerInch = 50f,
                 apps = apps
             ), SnapList(
                 gravity = Gravity.START,
                 title = "Start with fling limited",
-                maxFlingSizeFraction = 0.5f,
+                maxFlingSizeFraction = 1.0f,
                 scrollMsPerInch = 50f,
                 apps = apps
             ), SnapList(

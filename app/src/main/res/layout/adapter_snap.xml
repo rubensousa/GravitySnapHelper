@@ -21,22 +21,14 @@
 
     <ImageButton
         android:id="@+id/scrollPreviousButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_previous"
+        style="@style/PreviousButtonStyle"
         app:layout_constraintBottom_toBottomOf="@id/snapTextView"
         app:layout_constraintEnd_toStartOf="@id/scrollNextButton"
         app:layout_constraintTop_toTopOf="@id/snapTextView" />
 
     <ImageButton
         android:id="@+id/scrollNextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_next"
+        style="@style/NextButtonStyle"
         app:layout_constraintBottom_toBottomOf="@id/snapTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/snapTextView" />

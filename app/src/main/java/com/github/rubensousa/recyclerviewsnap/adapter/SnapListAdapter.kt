@@ -48,6 +48,7 @@ class SnapListAdapter : RecyclerView.Adapter<SnapListAdapter.VH>() {
             view.context,
             LinearLayoutManager.HORIZONTAL, false
         )
+        private val snapHelper = recyclerView.snapHelper
         private val snapNextButton: View = view.findViewById(R.id.scrollNextButton)
         private val snapPreviousButton: View = view.findViewById(R.id.scrollPreviousButton)
         private var item: SnapList? = null
@@ -56,8 +57,8 @@ class SnapListAdapter : RecyclerView.Adapter<SnapListAdapter.VH>() {
         init {
             recyclerView.layoutManager = layoutManager
             recyclerView.adapter = adapter
-            snapNextButton.setOnClickListener { scrollToNext() }
-            snapPreviousButton.setOnClickListener { scrollToPrevious() }
+            snapNextButton.setOnClickListener { recyclerView.snapToNextPosition(true) }
+            snapPreviousButton.setOnClickListener { recyclerView.snapToPreviousPosition(true) }
             recyclerView.setSnapListener(this)
         }
 
@@ -66,9 +67,8 @@ class SnapListAdapter : RecyclerView.Adapter<SnapListAdapter.VH>() {
             snapNextButton.isVisible = snapList.showScrollButtons
             titleView.text = snapList.title
             adapter.setItems(snapList.apps)
-            val snapHelper = recyclerView.snapHelper
             snapHelper.snapLastItem = false
-            snapHelper.gravity = snapList.gravity
+            snapHelper.setGravity(snapList.gravity, false)
             snapHelper.scrollMsPerInch = snapList.scrollMsPerInch
             snapHelper.maxFlingSizeFraction = snapList.maxFlingSizeFraction
             snapHelper.snapToPadding = snapList.snapToPadding
@@ -106,20 +106,6 @@ class SnapListAdapter : RecyclerView.Adapter<SnapListAdapter.VH>() {
 
         override fun onSnap(position: Int) {
             Log.d("Snapped ${item?.title}", position.toString())
-        }
-
-        private fun scrollToNext() {
-            val referencePosition = recyclerView.currentSnappedPosition
-            if (referencePosition != RecyclerView.NO_POSITION) {
-                recyclerView.smoothScrollToPosition(referencePosition + 1)
-            }
-        }
-
-        private fun scrollToPrevious() {
-            val referencePosition = recyclerView.currentSnappedPosition
-            if (referencePosition > 0) {
-                recyclerView.smoothScrollToPosition(referencePosition - 1)
-            }
         }
     }
 }

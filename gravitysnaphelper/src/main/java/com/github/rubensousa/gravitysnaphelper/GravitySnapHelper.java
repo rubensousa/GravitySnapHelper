@@ -139,27 +139,35 @@ public class GravitySnapHelper extends LinearSnapHelper {
     }
 
     @Override
-    public View findSnapView(RecyclerView.LayoutManager lm) {
+    @Nullable
+    public View findSnapView(@NonNull RecyclerView.LayoutManager lm) {
+        return findSnapView(lm, true);
+    }
+
+    @Nullable
+    public View findSnapView(@NonNull RecyclerView.LayoutManager lm, boolean checkEdgeOfList) {
         View snapView = null;
 
         switch (gravity) {
             case Gravity.START:
-                snapView = findView(lm, getHorizontalHelper(lm), Gravity.START);
+                snapView = findView(lm, getHorizontalHelper(lm), Gravity.START, checkEdgeOfList);
                 break;
             case Gravity.END:
-                snapView = findView(lm, getHorizontalHelper(lm), Gravity.END);
+                snapView = findView(lm, getHorizontalHelper(lm), Gravity.END, checkEdgeOfList);
                 break;
             case Gravity.TOP:
-                snapView = findView(lm, getVerticalHelper(lm), Gravity.START);
+                snapView = findView(lm, getVerticalHelper(lm), Gravity.START, checkEdgeOfList);
                 break;
             case Gravity.BOTTOM:
-                snapView = findView(lm, getVerticalHelper(lm), Gravity.END);
+                snapView = findView(lm, getVerticalHelper(lm), Gravity.END, checkEdgeOfList);
                 break;
             case Gravity.CENTER:
                 if (lm.canScrollHorizontally()) {
-                    snapView = findView(lm, getHorizontalHelper(lm), Gravity.CENTER);
+                    snapView = findView(lm, getHorizontalHelper(lm), Gravity.CENTER,
+                            checkEdgeOfList);
                 } else {
-                    snapView = findView(lm, getVerticalHelper(lm), Gravity.CENTER);
+                    snapView = findView(lm, getVerticalHelper(lm), Gravity.CENTER,
+                            checkEdgeOfList);
                 }
                 break;
         }
@@ -172,9 +180,11 @@ public class GravitySnapHelper extends LinearSnapHelper {
     }
 
     @Override
+    @NonNull
     public int[] calculateDistanceToFinalSnap(@NonNull RecyclerView.LayoutManager layoutManager,
                                               @NonNull View targetView) {
         if (gravity == Gravity.CENTER) {
+            //noinspection ConstantConditions
             return super.calculateDistanceToFinalSnap(layoutManager, targetView);
         }
 
@@ -203,6 +213,7 @@ public class GravitySnapHelper extends LinearSnapHelper {
     }
 
     @Override
+    @NonNull
     public int[] calculateScrollDistance(int velocityX, int velocityY) {
         if (recyclerView == null
                 || (verticalHelper == null && horizontalHelper == null)
@@ -336,9 +347,45 @@ public class GravitySnapHelper extends LinearSnapHelper {
      *                   {@link Gravity#END}, {@link Gravity#BOTTOM}, {@link Gravity#CENTER}
      */
     public void setGravity(int newGravity) {
+        setGravity(newGravity, true);
+    }
+
+    /**
+     * Changes the gravity of this {@link GravitySnapHelper}
+     * and dispatches a smooth scroll for the new snap position.
+     *
+     * @param newGravity one of the following: {@link Gravity#START}, {@link Gravity#TOP},
+     *                   {@link Gravity#END}, {@link Gravity#BOTTOM}, {@link Gravity#CENTER}
+     * @param smooth     true if we should smooth scroll to new edge, false otherwise
+     */
+    public void setGravity(int newGravity, Boolean smooth) {
         if (this.gravity != newGravity) {
             this.gravity = newGravity;
-            updateSnap();
+            updateSnap(smooth, false);
+        }
+    }
+
+    /**
+     * Updates the current view to be snapped
+     *
+     * @param smooth          true if we should smooth scroll, false otherwise
+     * @param checkEdgeOfList true if we should check if we're at an edge of the list
+     *                        and snap according to {@link GravitySnapHelper#getSnapLastItem()},
+     *                        or false to force snapping to the nearest view
+     */
+    public void updateSnap(Boolean smooth, Boolean checkEdgeOfList) {
+        if (recyclerView == null || recyclerView.getLayoutManager() == null) {
+            return;
+        }
+        final RecyclerView.LayoutManager lm = recyclerView.getLayoutManager();
+        View snapView = findSnapView(lm, checkEdgeOfList);
+        if (snapView != null) {
+            int[] out = calculateDistanceToFinalSnap(lm, snapView);
+            if (smooth) {
+                recyclerView.smoothScrollBy(out[0], out[1]);
+            } else {
+                recyclerView.scrollBy(out[0], out[1]);
+            }
         }
     }
 
@@ -449,19 +496,6 @@ public class GravitySnapHelper extends LinearSnapHelper {
         }
     }
 
-    private void updateSnap() {
-        if (recyclerView == null || recyclerView.getLayoutManager() == null) {
-            return;
-        }
-        View snapView = findSnapView(recyclerView.getLayoutManager());
-        if (snapView != null) {
-            int adapterPosition = recyclerView.getChildAdapterPosition(snapView);
-            if (adapterPosition != RecyclerView.NO_POSITION) {
-                scrollTo(adapterPosition, true);
-            }
-        }
-    }
-
     /**
      * @return true if the scroll will snap to a view, false otherwise
      */
@@ -531,9 +565,10 @@ public class GravitySnapHelper extends LinearSnapHelper {
      * @return the first view in the LayoutManager to snap to, or null if we shouldn't snap to any
      */
     @Nullable
-    private View findView(RecyclerView.LayoutManager layoutManager,
-                          OrientationHelper helper,
-                          int gravity) {
+    private View findView(@NonNull RecyclerView.LayoutManager layoutManager,
+                          @NonNull OrientationHelper helper,
+                          int gravity,
+                          boolean checkEdgeOfList) {
 
         if (layoutManager.getChildCount() == 0 || !(layoutManager instanceof LinearLayoutManager)) {
             return null;
@@ -541,9 +576,9 @@ public class GravitySnapHelper extends LinearSnapHelper {
 
         final LinearLayoutManager lm = (LinearLayoutManager) layoutManager;
 
-        // If we're at the end of the list, we shouldn't snap
+        // If we're at an edge of the list, we shouldn't snap
         // to avoid having the last item not completely visible.
-        if (isAtEndOfList(lm) && !snapLastItem) {
+        if (checkEdgeOfList && (isAtEdgeOfList(lm) && !snapLastItem)) {
             return null;
         }
 
@@ -592,7 +627,7 @@ public class GravitySnapHelper extends LinearSnapHelper {
         return edgeView;
     }
 
-    private boolean isAtEndOfList(LinearLayoutManager lm) {
+    private boolean isAtEdgeOfList(LinearLayoutManager lm) {
         if ((!lm.getReverseLayout() && gravity == Gravity.START)
                 || (lm.getReverseLayout() && gravity == Gravity.END)
                 || (!lm.getReverseLayout() && gravity == Gravity.TOP)

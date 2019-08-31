@@ -20,9 +20,11 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.Gravity;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * An {@link OrientationAwareRecyclerView} that uses a default {@link GravitySnapHelper}
@@ -117,7 +119,38 @@ public class GravitySnapRecyclerView extends OrientationAwareRecyclerView {
         return snapHelper.getCurrentSnappedPosition();
     }
 
+    public void snapToNextPosition(Boolean smooth) {
+        snapTo(true, smooth);
+    }
+
+    public void snapToPreviousPosition(Boolean smooth) {
+        snapTo(false, smooth);
+    }
+
     public void setSnapListener(@Nullable GravitySnapHelper.SnapListener listener) {
         snapHelper.setSnapListener(listener);
+    }
+
+    private void snapTo(Boolean next, Boolean smooth) {
+        final RecyclerView.LayoutManager lm = getLayoutManager();
+        if (lm != null) {
+            final View snapView = snapHelper.findSnapView(lm, false);
+            if (snapView != null) {
+                final int pos = getChildAdapterPosition(snapView);
+                if (next) {
+                    if (smooth) {
+                        smoothScrollToPosition(pos + 1);
+                    } else {
+                        scrollToPosition(pos + 1);
+                    }
+                } else if (pos > 0) {
+                    if (smooth) {
+                        smoothScrollToPosition(pos - 1);
+                    } else {
+                        scrollToPosition(pos - 1);
+                    }
+                }
+            }
+        }
     }
 }

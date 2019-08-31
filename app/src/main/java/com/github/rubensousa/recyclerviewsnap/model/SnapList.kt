@@ -11,5 +11,7 @@ data class SnapList(
     val snapToPadding: Boolean = false,
     val showScrollButtons: Boolean = true,
     val maxFlingSizeFraction: Float = GravitySnapHelper.FLING_SIZE_FRACTION_DISABLE,
-    val scrollMsPerInch: Float = 100f
+    val scrollMsPerInch: Float = 100f,
+    val addStartDecoration: Boolean = false,
+    val addEndDecoration: Boolean = false
 )

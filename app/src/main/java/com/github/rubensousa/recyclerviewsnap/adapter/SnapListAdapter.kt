@@ -72,6 +72,36 @@ class SnapListAdapter : RecyclerView.Adapter<SnapListAdapter.VH>() {
             snapHelper.scrollMsPerInch = snapList.scrollMsPerInch
             snapHelper.maxFlingSizeFraction = snapList.maxFlingSizeFraction
             snapHelper.snapToPadding = snapList.snapToPadding
+            applyDecoration(snapList)
+        }
+
+        private fun applyDecoration(snapList: SnapList) {
+            val decorations = recyclerView.itemDecorationCount
+            repeat(decorations) {
+                recyclerView.removeItemDecorationAt(0)
+            }
+            if (snapList.addStartDecoration) {
+                recyclerView.addItemDecoration(
+                    LinearEdgeDecoration(
+                        startPadding = recyclerView.resources.getDimensionPixelOffset(
+                            R.dimen.extra_padding
+                        ),
+                        endPadding = 0,
+                        orientation = RecyclerView.HORIZONTAL
+                    )
+                )
+            }
+            if (snapList.addEndDecoration) {
+                recyclerView.addItemDecoration(
+                    LinearEdgeDecoration(
+                        startPadding = 0,
+                        endPadding = recyclerView.resources.getDimensionPixelOffset(
+                            R.dimen.extra_padding
+                        ),
+                        orientation = RecyclerView.HORIZONTAL
+                    )
+                )
+            }
         }
 
         override fun onSnap(position: Int) {

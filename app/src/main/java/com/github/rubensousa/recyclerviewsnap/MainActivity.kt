@@ -114,24 +114,25 @@ class MainActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListener {
                     apps = apps
                 ), SnapList(
                     gravity = Gravity.START,
-                    layoutId = R.layout.adapter_snap_extra_padding_start,
                     snapToPadding = false,
-                    title = "Start with large padding",
-                    apps = apps
+                    title = "Start with decoration",
+                    apps = apps,
+                    addStartDecoration = true
                 ), SnapList(
                     gravity = Gravity.END,
                     title = "End",
                     apps = apps
                 ), SnapList(
                     gravity = Gravity.END,
+                    layoutId = R.layout.adapter_snap_padding_end,
                     snapToPadding = true,
                     title = "End with padding",
                     apps = apps
                 ), SnapList(
                     gravity = Gravity.END,
-                    layoutId = R.layout.adapter_snap_extra_padding_end,
                     snapToPadding = false,
-                    title = "End with large padding",
+                    title = "End with decoration",
+                    addEndDecoration = true,
                     apps = apps
                 )
             )

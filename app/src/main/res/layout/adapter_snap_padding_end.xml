@@ -48,16 +48,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:clipToPadding="false"
-        android:paddingStart="@dimen/extra_padding"
-        android:paddingEnd="16dp"
+        android:paddingEnd="@dimen/small_padding"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/snapTextView"
-        app:snapEnabled="true"
-        app:snapGravity="start"
-        app:snapLastItem="false"
-        app:snapMaxFlingSizeFraction="0.5"
-        app:snapScrollMsPerInch="50"
-        app:snapToPadding="false" />
+        tools:ignore="RtlSymmetry" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

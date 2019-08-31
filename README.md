@@ -50,7 +50,7 @@ val snapHelper = GravitySnapHelper(Gravity.START)
 snapHelper.attachToRecyclerView(recyclerView)
 ```
 
-<img src="screens/start_snap.gif" width=350></img>
+<img src="screens/snap_start.gif" width=350></img>
 
 ## Center snapping
 
@@ -59,19 +59,19 @@ val snapHelper = GravitySnapHelper(Gravity.CENTER)
 snapHelper.attachToRecyclerView(recyclerView)
 ```
 
-<img src="screens/center_snap.gif" width=350></img>
+<img src="screens/snap_center.gif" width=350></img>
 
 ## Limiting fling distance
 
 If you use  **setMaxFlingSizeFraction** or **setMaxFlingDistance** 
 you can change the maximum fling distance allowed.
 
-<img src="screens/fling_limit_snap.gif" width=350></img>
+<img src="screens/snap_fling.gif" width=350></img>
 
 
 ## With decoration
 
-<img src="screens/decoration_snap.gif" width=350></img>
+<img src="screens/snap_decoration.gif" width=350></img>
 
 ## Features 
 

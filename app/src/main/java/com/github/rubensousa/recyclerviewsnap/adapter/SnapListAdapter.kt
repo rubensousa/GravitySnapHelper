@@ -57,6 +57,7 @@ class SnapListAdapter : RecyclerView.Adapter<SnapListAdapter.VH>() {
         init {
             recyclerView.layoutManager = layoutManager
             recyclerView.adapter = adapter
+            recyclerView.clipChildren = false
             snapNextButton.setOnClickListener { recyclerView.snapToNextPosition(true) }
             snapPreviousButton.setOnClickListener { recyclerView.snapToPreviousPosition(true) }
             recyclerView.setSnapListener(this)

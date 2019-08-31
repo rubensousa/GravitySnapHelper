@@ -5,11 +5,15 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <com.github.rubensousa.gravitysnaphelper.OrientationAwareRecyclerView
+    <com.github.rubensousa.gravitysnaphelper.GravitySnapRecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:snapEnabled="false"
+        app:snapGravity="top"
+        app:snapMaxFlingSizeFraction="2"
+        app:snapScrollMsPerInch="50" />
 
 
     <com.google.android.material.appbar.AppBarLayout

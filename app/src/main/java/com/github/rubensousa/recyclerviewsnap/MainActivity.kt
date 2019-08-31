@@ -2,14 +2,12 @@ package com.github.rubensousa.recyclerviewsnap
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.github.rubensousa.gravitysnaphelper.GravitySnapHelper
+import com.github.rubensousa.gravitysnaphelper.GravitySnapRecyclerView
 import com.github.rubensousa.recyclerviewsnap.adapter.AppAdapter
 import com.github.rubensousa.recyclerviewsnap.adapter.SnapListAdapter
 import com.github.rubensousa.recyclerviewsnap.model.App
@@ -40,19 +38,13 @@ class MainActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListener {
         }
     }
 
-    private lateinit var snapHelper: GravitySnapHelper
-    private lateinit var recyclerView: RecyclerView
+    private lateinit var recyclerView: GravitySnapRecyclerView
     private var horizontal = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         recyclerView = findViewById(R.id.recyclerView)
-        snapHelper = GravitySnapHelper(Gravity.TOP, false,
-            GravitySnapHelper.SnapListener { position ->
-                Log.d("Snapped", position.toString() + "")
-            })
-
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         toolbar.inflateMenu(R.menu.main)
         toolbar.setOnMenuItemClickListener(this)
@@ -70,86 +62,6 @@ class MainActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListener {
         outState.putBoolean(STATE_ORIENTATION, horizontal)
     }
 
-    private fun setupAdapter() {
-        val apps = getApps()
-
-        if (horizontal) {
-            val adapter = SnapListAdapter()
-            val lists = listOf(
-                SnapList(
-                    gravity = Gravity.CENTER,
-                    title = "Center",
-                    apps = apps
-                ), SnapList(
-                    gravity = Gravity.CENTER,
-                    title = "Center with faster scroll",
-                    scrollMsPerInch = 50f,
-                    apps = apps
-                ), SnapList(
-                    gravity = Gravity.CENTER,
-                    title = "Center with slower scroll",
-                    scrollMsPerInch = 200f,
-                    apps = apps
-                ), SnapList(
-                    gravity = Gravity.CENTER,
-                    title = "Center with fling limited",
-                    maxFlingSizeFraction = 0.5f,
-                    scrollMsPerInch = 50f,
-                    apps = apps
-                ), SnapList(
-                    gravity = Gravity.START,
-                    title = "Start",
-                    apps = apps
-                ), SnapList(
-                    gravity = Gravity.START,
-                    title = "Start with fling limited",
-                    maxFlingSizeFraction = 0.5f,
-                    scrollMsPerInch = 50f,
-                    apps = apps
-                ), SnapList(
-                    layoutId = R.layout.adapter_snap_padding_start,
-                    gravity = Gravity.START,
-                    snapToPadding = true,
-                    title = "Start with padding",
-                    apps = apps
-                ), SnapList(
-                    gravity = Gravity.START,
-                    snapToPadding = false,
-                    title = "Start with decoration",
-                    apps = apps,
-                    addStartDecoration = true
-                ), SnapList(
-                    gravity = Gravity.END,
-                    title = "End",
-                    apps = apps
-                ), SnapList(
-                    gravity = Gravity.END,
-                    layoutId = R.layout.adapter_snap_padding_end,
-                    snapToPadding = true,
-                    title = "End with padding",
-                    apps = apps
-                ), SnapList(
-                    gravity = Gravity.END,
-                    snapToPadding = false,
-                    title = "End with decoration",
-                    addEndDecoration = true,
-                    apps = apps
-                )
-            )
-            adapter.setItems(lists)
-            recyclerView.adapter = adapter
-            snapHelper.attachToRecyclerView(null)
-        } else {
-            val adapter =
-                AppAdapter(R.layout.adapter_vertical)
-            adapter.setItems(apps)
-            recyclerView.adapter = adapter
-            snapHelper.setScrollMsPerInch(50f)
-            snapHelper.setMaxFlingSizeFraction(2f)
-            snapHelper.attachToRecyclerView(recyclerView)
-        }
-    }
-
     override fun onMenuItemClick(item: MenuItem): Boolean {
         if (item.itemId == R.id.layoutType) {
             horizontal = !horizontal
@@ -159,6 +71,102 @@ class MainActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListener {
             startActivity(Intent(this, GridActivity::class.java))
         }
         return false
+    }
+
+
+    private fun setupAdapter() {
+        if (horizontal) {
+            setupHorizontalAdapter()
+        } else {
+            setupVerticalAdapter()
+        }
+    }
+
+    private fun setupHorizontalAdapter() {
+        val apps = getApps()
+        recyclerView.enableSnapping(false)
+        val adapter = SnapListAdapter()
+        val lists = listOf(
+            SnapList(
+                gravity = Gravity.CENTER,
+                title = "Center",
+                apps = apps
+            ), SnapList(
+                gravity = Gravity.START,
+                title = "Start",
+                apps = apps
+            ), SnapList(
+                gravity = Gravity.END,
+                title = "End",
+                apps = apps
+            ), SnapList(
+                gravity = Gravity.CENTER,
+                title = "Center with fling limited",
+                maxFlingSizeFraction = 0.5f,
+                scrollMsPerInch = 50f,
+                apps = apps
+            ), SnapList(
+                gravity = Gravity.START,
+                title = "Start with fling limited",
+                maxFlingSizeFraction = 0.5f,
+                scrollMsPerInch = 50f,
+                apps = apps
+            ), SnapList(
+                layoutId = R.layout.adapter_snap_padding_start,
+                gravity = Gravity.START,
+                snapToPadding = true,
+                title = "Start with padding",
+                apps = apps
+            ), SnapList(
+                gravity = Gravity.END,
+                layoutId = R.layout.adapter_snap_padding_end,
+                snapToPadding = true,
+                title = "End with padding",
+                apps = apps
+            ), SnapList(
+                gravity = Gravity.START,
+                snapToPadding = false,
+                title = "Start with decoration",
+                apps = apps,
+                addStartDecoration = true
+            ), SnapList(
+                gravity = Gravity.CENTER,
+                snapToPadding = false,
+                title = "Center with decoration",
+                addStartDecoration = true,
+                apps = apps
+            ), SnapList(
+                gravity = Gravity.END,
+                snapToPadding = false,
+                title = "End with decoration",
+                addEndDecoration = true,
+                apps = apps
+            ), SnapList(
+                gravity = Gravity.CENTER,
+                title = "Center with fast scroll",
+                scrollMsPerInch = 50f,
+                apps = apps
+            ), SnapList(
+                gravity = Gravity.START,
+                title = "Start with fast scroll",
+                scrollMsPerInch = 50f,
+                apps = apps
+            ), SnapList(
+                gravity = Gravity.CENTER,
+                title = "Center with slow scroll",
+                scrollMsPerInch = 200f,
+                apps = apps
+            )
+        )
+        adapter.setItems(lists)
+        recyclerView.adapter = adapter
+    }
+
+    private fun setupVerticalAdapter() {
+        val adapter = AppAdapter(R.layout.adapter_vertical)
+        adapter.setItems(getApps())
+        recyclerView.adapter = adapter
+        recyclerView.enableSnapping(true)
     }
 
 }

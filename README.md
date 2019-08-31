@@ -10,48 +10,19 @@ Add this to your build.gradle:
 implementation 'com.github.rubensousa:gravitysnaphelper:2.2.0'
 ```
 
-## Start snapping
+## How to use
+
+You can either create a GravitySnapHelper, or use GravitySnapRecyclerView.
+
+If you want to use GravitySnapHelper directly, 
+you just need to create it and attach it to your RecyclerView:
 
 ```kotlin
 val snapHelper = GravitySnapHelper(Gravity.START)
 snapHelper.attachToRecyclerView(recyclerView)
 ```
 
-<img src="screens/start_snap.gif" width=300></img>
-
-## Center snapping
-
-```kotlin
-val snapHelper = GravitySnapHelper(Gravity.CENTER)
-snapHelper.attachToRecyclerView(recyclerView)
-```
-
-<img src="screens/center_snap.gif" width=300></img>
-
-## Limiting fling distance
-
-If you use  **setMaxFlingSizeFraction** or **setMaxFlingDistance** 
-you can change the maximum fling distance allowed.
-
-<img src="screens/fling_limit_snap.gif" width=300></img>
-
-
-## With decoration
-
-<img src="screens/decoration_snap.gif" width=300></img>
-
-## Features 
-
-1. **setMaxFlingDistance** or **setMaxFlingSizeFraction** - changes the max fling distance allowed.
-2. **setScrollMsPerInch** - changes the scroll speed.
-3. **setGravity** - changes the gravity of the SnapHelper.
-4. **setSnapToPadding** - enables snapping to padding (default is false)
-5. **smoothScrollToPosition** and **scrollToPosition**
-6. RTL support out of the box
-
-## GravitySnapRecyclerView
-
-This RecyclerView uses GravitySnapHelper by default. Its attributes are:
+If you want to use GravitySnapRecyclerView, you can use the following xml attributes for customisation:
 
 ```xml
 <attr name="snapGravity" format="enum">
@@ -62,13 +33,54 @@ This RecyclerView uses GravitySnapHelper by default. Its attributes are:
 <attr name="snapMaxFlingSizeFraction" format="float" />
 ```
 
-It also includes the following functions that you might want to use:
+Example:
 
-```java
-public void snapToNextPosition(Boolean smooth)
-
-public void snapToPreviousPosition(Boolean smooth)
+```xml
+<com.github.rubensousa.gravitysnaphelper.GravitySnapRecyclerView
+    android:id="@+id/recyclerView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:snapGravity="start" />
 ```
+
+## Start snapping
+
+```kotlin
+val snapHelper = GravitySnapHelper(Gravity.START)
+snapHelper.attachToRecyclerView(recyclerView)
+```
+
+<img src="screens/start_snap.gif" width=200></img>
+
+## Center snapping
+
+```kotlin
+val snapHelper = GravitySnapHelper(Gravity.CENTER)
+snapHelper.attachToRecyclerView(recyclerView)
+```
+
+<img src="screens/center_snap.gif" width=200></img>
+
+## Limiting fling distance
+
+If you use  **setMaxFlingSizeFraction** or **setMaxFlingDistance** 
+you can change the maximum fling distance allowed.
+
+<img src="screens/fling_limit_snap.gif" width=200></img>
+
+
+## With decoration
+
+<img src="screens/decoration_snap.gif" width=200></img>
+
+## Features 
+
+1. **setMaxFlingDistance** or **setMaxFlingSizeFraction** - changes the max fling distance allowed.
+2. **setScrollMsPerInch** - changes the scroll speed.
+3. **setGravity** - changes the gravity of the SnapHelper.
+4. **setSnapToPadding** - enables snapping to padding (default is false)
+5. **smoothScrollToPosition** and **scrollToPosition**
+6. RTL support out of the box
 
 ## Nested RecyclerViews
 

@@ -17,8 +17,7 @@ class GridActivity : AppCompatActivity() {
         setContentView(R.layout.activity_grid)
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
 
-        val adapter =
-            AppAdapter(R.layout.adapter_vertical)
+        val adapter = AppAdapter(R.layout.adapter_vertical)
 
         val apps = arrayListOf<App>()
         repeat(5) {
@@ -26,13 +25,8 @@ class GridActivity : AppCompatActivity() {
         }
 
         adapter.setItems(apps)
-
         recyclerView.layoutManager = GridLayoutManager(this, 2, RecyclerView.VERTICAL, false)
         recyclerView.setHasFixedSize(true)
         recyclerView.adapter = adapter
-        val snapHelper = GravitySnapHelper(Gravity.TOP)
-        snapHelper.setScrollMsPerInch(50f)
-        snapHelper.setMaxFlingSizeFraction(3f)
-        snapHelper.attachToRecyclerView(recyclerView)
     }
 }

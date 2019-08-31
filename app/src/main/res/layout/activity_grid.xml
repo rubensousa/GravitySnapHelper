@@ -6,11 +6,13 @@
     android:fitsSystemWindows="true">
 
 
-    <androidx.recyclerview.widget.RecyclerView
+    <com.github.rubensousa.gravitysnaphelper.GravitySnapRecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:snapGravity="top"
+        app:snapMaxFlingSizeFraction="3" />
 
 
     <com.google.android.material.appbar.AppBarLayout

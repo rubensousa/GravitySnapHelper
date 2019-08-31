@@ -3,9 +3,9 @@
 ## 2.2.0
 
 ### New features
-- Added Gravity.CENTER support (#21)
-- Added setMaxFlingDistance and setMaxFlingSizeFraction to change the max fling distance allowed (#29)
-- Added setSnapToPadding to allow snapping to the padding set in the RecyclerView. Defaults to false (#58)
+- Added Gravity.CENTER support ([#21](https://github.com/rubensousa/GravitySnapHelper/issue/21))
+- Added setMaxFlingDistance and setMaxFlingSizeFraction to change the max fling distance allowed ([#29](https://github.com/rubensousa/GravitySnapHelper/issue/29))
+- Added setSnapToPadding to allow snapping to the padding set in the RecyclerView. Defaults to false ([#58](https://github.com/rubensousa/GravitySnapHelper/issue/58))
 - Added GravitySnapRecyclerView that uses GravitySnapHelper by default
 - Added setGravity to change the gravity of GravitySnapHelper
 - Added setScrollMsPerInch to change the scroll speed

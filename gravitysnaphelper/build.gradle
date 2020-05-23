@@ -9,11 +9,17 @@ android {
         versionCode 1
         versionName "1.0"
     }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
 }
 
 dependencies {
     api 'androidx.recyclerview:recyclerview:1.1.0'
 }
 
-apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
-apply from: rootProject.file('gradle/gradle-bintray-upload.gradle')
+apply from: "$rootProject.projectDir/gradle/publish.gradle"

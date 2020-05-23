@@ -52,19 +52,6 @@ public class GravitySnapHelper extends LinearSnapHelper {
 
     public static final int FLING_DISTANCE_DISABLE = -1;
     public static final float FLING_SIZE_FRACTION_DISABLE = -1f;
-
-    /**
-     * A listener that's called when the {@link RecyclerView} used by {@link GravitySnapHelper}
-     * changes its scroll state to {@link RecyclerView#SCROLL_STATE_IDLE}
-     * and there's a valid snap position.
-     */
-    public interface SnapListener {
-        /**
-         * @param position last position snapped to
-         */
-        void onSnap(int position);
-    }
-
     private int gravity;
     private boolean isRtl;
     private boolean snapLastItem;
@@ -80,14 +67,9 @@ public class GravitySnapHelper extends LinearSnapHelper {
     private RecyclerView recyclerView;
     private RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {
         @Override
-        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+        public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
             super.onScrollStateChanged(recyclerView, newState);
-            if (newState == RecyclerView.SCROLL_STATE_IDLE && listener != null) {
-                if (nextSnapPosition != RecyclerView.NO_POSITION && isScrolling) {
-                    listener.onSnap(nextSnapPosition);
-                }
-            }
-            isScrolling = newState != RecyclerView.SCROLL_STATE_IDLE;
+            GravitySnapHelper.this.onScrollStateChanged(newState);
         }
     };
 
@@ -276,81 +258,6 @@ public class GravitySnapHelper extends LinearSnapHelper {
     }
 
     /**
-     * Changes the max fling distance in absolute values.
-     *
-     * @param distance max fling distance in pixels
-     *                 or {@link GravitySnapHelper#FLING_DISTANCE_DISABLE}
-     *                 to disable fling limits
-     */
-    public void setMaxFlingDistance(@Px int distance) {
-        maxFlingDistance = distance;
-        maxFlingSizeFraction = FLING_SIZE_FRACTION_DISABLE;
-    }
-
-    /**
-     * Changes the max fling distance depending on the available size of the RecyclerView.
-     * <p>
-     * Example: if you pass 0.5f and the RecyclerView measures 600dp,
-     * the max fling distance will be 300dp.
-     *
-     * @param fraction size fraction to be used for the max fling distance
-     *                 or {@link GravitySnapHelper#FLING_SIZE_FRACTION_DISABLE}
-     *                 to disable fling limits
-     */
-    public void setMaxFlingSizeFraction(float fraction) {
-        maxFlingDistance = FLING_DISTANCE_DISABLE;
-        maxFlingSizeFraction = fraction;
-    }
-
-    /**
-     * Enable snapping of the last item that's snappable.
-     * The default value is false, because you can't see the last item completely
-     * if this is enabled.
-     *
-     * @param snap true if you want to enable snapping of the last snappable item
-     */
-    public void setSnapLastItem(boolean snap) {
-        snapLastItem = snap;
-    }
-
-    /**
-     * If true, GravitySnapHelper will snap to the gravity edge
-     * plus any amount of padding that was set in the RecyclerView.
-     * <p>
-     * The default value is false.
-     *
-     * @param snapToPadding true if you want to snap to the padding
-     */
-    public void setSnapToPadding(boolean snapToPadding) {
-        this.snapToPadding = snapToPadding;
-    }
-
-    /**
-     * Sets the scroll duration in ms per inch.
-     * <p>
-     * Default value is 100.0f
-     * <p>
-     * This value will be used in
-     * {@link GravitySnapHelper#createScroller(RecyclerView.LayoutManager)}
-     *
-     * @param ms scroll duration in ms per inch
-     */
-    public void setScrollMsPerInch(float ms) {
-        scrollMsPerInch = ms;
-    }
-
-    /**
-     * Changes the gravity of this {@link GravitySnapHelper}
-     * and dispatches a smooth scroll for the new snap position.
-     *
-     * @param newGravity one of the following: {@link Gravity#START}, {@link Gravity#TOP},
-     *                   {@link Gravity#END}, {@link Gravity#BOTTOM}, {@link Gravity#CENTER}
-     */
-    public void setGravity(int newGravity) {
-        setGravity(newGravity, true);
-    }
-
-    /**
      * Changes the gravity of this {@link GravitySnapHelper}
      * and dispatches a smooth scroll for the new snap position.
      *
@@ -428,10 +335,32 @@ public class GravitySnapHelper extends LinearSnapHelper {
     }
 
     /**
+     * Changes the gravity of this {@link GravitySnapHelper}
+     * and dispatches a smooth scroll for the new snap position.
+     *
+     * @param newGravity one of the following: {@link Gravity#START}, {@link Gravity#TOP},
+     *                   {@link Gravity#END}, {@link Gravity#BOTTOM}, {@link Gravity#CENTER}
+     */
+    public void setGravity(int newGravity) {
+        setGravity(newGravity, true);
+    }
+
+    /**
      * @return true if this SnapHelper should snap to the last item
      */
     public boolean getSnapLastItem() {
         return snapLastItem;
+    }
+
+    /**
+     * Enable snapping of the last item that's snappable.
+     * The default value is false, because you can't see the last item completely
+     * if this is enabled.
+     *
+     * @param snap true if you want to enable snapping of the last snappable item
+     */
+    public void setSnapLastItem(boolean snap) {
+        snapLastItem = snap;
     }
 
     /**
@@ -440,6 +369,18 @@ public class GravitySnapHelper extends LinearSnapHelper {
      */
     public int getMaxFlingDistance() {
         return maxFlingDistance;
+    }
+
+    /**
+     * Changes the max fling distance in absolute values.
+     *
+     * @param distance max fling distance in pixels
+     *                 or {@link GravitySnapHelper#FLING_DISTANCE_DISABLE}
+     *                 to disable fling limits
+     */
+    public void setMaxFlingDistance(@Px int distance) {
+        maxFlingDistance = distance;
+        maxFlingSizeFraction = FLING_SIZE_FRACTION_DISABLE;
     }
 
     /**
@@ -452,6 +393,21 @@ public class GravitySnapHelper extends LinearSnapHelper {
     }
 
     /**
+     * Changes the max fling distance depending on the available size of the RecyclerView.
+     * <p>
+     * Example: if you pass 0.5f and the RecyclerView measures 600dp,
+     * the max fling distance will be 300dp.
+     *
+     * @param fraction size fraction to be used for the max fling distance
+     *                 or {@link GravitySnapHelper#FLING_SIZE_FRACTION_DISABLE}
+     *                 to disable fling limits
+     */
+    public void setMaxFlingSizeFraction(float fraction) {
+        maxFlingDistance = FLING_DISTANCE_DISABLE;
+        maxFlingSizeFraction = fraction;
+    }
+
+    /**
      * @return last scroll speed set through {@link GravitySnapHelper#setScrollMsPerInch(float)}
      * or 100f
      */
@@ -460,10 +416,36 @@ public class GravitySnapHelper extends LinearSnapHelper {
     }
 
     /**
+     * Sets the scroll duration in ms per inch.
+     * <p>
+     * Default value is 100.0f
+     * <p>
+     * This value will be used in
+     * {@link GravitySnapHelper#createScroller(RecyclerView.LayoutManager)}
+     *
+     * @param ms scroll duration in ms per inch
+     */
+    public void setScrollMsPerInch(float ms) {
+        scrollMsPerInch = ms;
+    }
+
+    /**
      * @return true if this SnapHelper should snap to the padding. Defaults to false.
      */
     public boolean getSnapToPadding() {
         return snapToPadding;
+    }
+
+    /**
+     * If true, GravitySnapHelper will snap to the gravity edge
+     * plus any amount of padding that was set in the RecyclerView.
+     * <p>
+     * The default value is false.
+     *
+     * @param snapToPadding true if you want to snap to the padding
+     */
+    public void setSnapToPadding(boolean snapToPadding) {
+        this.snapToPadding = snapToPadding;
     }
 
     /**
@@ -641,6 +623,49 @@ public class GravitySnapHelper extends LinearSnapHelper {
         }
     }
 
+    /**
+     * Dispatches a {@link SnapListener#onSnap(int)} event if the snapped position
+     * is different than {@link RecyclerView#NO_POSITION}.
+     * <p>
+     * When {@link GravitySnapHelper#findSnapView(RecyclerView.LayoutManager)} returns null,
+     * {@link GravitySnapHelper#dispatchSnapChangeWhenPositionIsUnknown()} is called
+     *
+     * @param newState the new RecyclerView scroll state
+     */
+    private void onScrollStateChanged(int newState) {
+        if (newState == RecyclerView.SCROLL_STATE_IDLE && listener != null) {
+            if (isScrolling) {
+                if (nextSnapPosition != RecyclerView.NO_POSITION) {
+                    listener.onSnap(nextSnapPosition);
+                } else {
+                    dispatchSnapChangeWhenPositionIsUnknown();
+                }
+            }
+        }
+        isScrolling = newState != RecyclerView.SCROLL_STATE_IDLE;
+    }
+
+    /**
+     * Calls {@link GravitySnapHelper#findSnapView(RecyclerView.LayoutManager, boolean)}
+     * without the check for the edge of the list.
+     * <p>
+     * This makes sure that a position is reported in {@link SnapListener#onSnap(int)}
+     */
+    private void dispatchSnapChangeWhenPositionIsUnknown() {
+        RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
+        if (layoutManager == null) {
+            return;
+        }
+        View snapView = findSnapView(layoutManager, false);
+        if (snapView == null) {
+            return;
+        }
+        int snapPosition = recyclerView.getChildAdapterPosition(snapView);
+        if (snapPosition != RecyclerView.NO_POSITION) {
+            listener.onSnap(snapPosition);
+        }
+    }
+
     private OrientationHelper getVerticalHelper(RecyclerView.LayoutManager layoutManager) {
         if (verticalHelper == null || verticalHelper.getLayoutManager() != layoutManager) {
             verticalHelper = OrientationHelper.createVerticalHelper(layoutManager);
@@ -653,6 +678,18 @@ public class GravitySnapHelper extends LinearSnapHelper {
             horizontalHelper = OrientationHelper.createHorizontalHelper(layoutManager);
         }
         return horizontalHelper;
+    }
+
+    /**
+     * A listener that's called when the {@link RecyclerView} used by {@link GravitySnapHelper}
+     * changes its scroll state to {@link RecyclerView#SCROLL_STATE_IDLE}
+     * and there's a valid snap position.
+     */
+    public interface SnapListener {
+        /**
+         * @param position last position snapped to
+         */
+        void onSnap(int position);
     }
 
 }

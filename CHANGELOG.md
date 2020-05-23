@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.1
+
+- Fixed `GravitySnapHelper` not dispatching snap events for edge items sometimes on `SnapListener`
+
 ## 2.2.0
 
 ### New features

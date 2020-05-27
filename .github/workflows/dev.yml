@@ -6,13 +6,13 @@ on:
       - '**/*.md'
       - '**/*.txt'
     branches:
-      - 'dev'
+      - 'develop'
   push:
     paths-ignore:
       - '**/*.md'
       - '**/*.txt'
     branches:
-      - 'dev'
+      - 'develop'
 
 jobs:
   build:

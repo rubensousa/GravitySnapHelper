@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.2
+
+- Fixed IllegalArgumentException being incorrectly thrown in `GravitySnapRecyclerView` when Gravity.CENTER is used.
+
 ## 2.2.1
 
 - Fixed `GravitySnapHelper` not dispatching snap events for edge items sometimes on `SnapListener`

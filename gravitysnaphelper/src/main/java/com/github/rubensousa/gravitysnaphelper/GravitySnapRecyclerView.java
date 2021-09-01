@@ -66,6 +66,7 @@ public class GravitySnapRecyclerView extends OrientationAwareRecyclerView {
                 break;
             case 4:
                 snapHelper = new GravitySnapHelper(Gravity.CENTER);
+                break;
             default:
                 throw new IllegalArgumentException("Invalid gravity value. Use START " +
                         "| END | BOTTOM | TOP | CENTER constants");

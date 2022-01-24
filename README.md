@@ -2,6 +2,8 @@
 
 A SnapHelper that snaps a RecyclerView to an edge.
 
+[![Maintainability](https://cloud.quality-gate.com/dashboard/api/badge?projectName=rubensousa_GravitySnapHelper&branchName=master)](https://cloud.quality-gate.com/dashboard/branches/428716#overview)
+
 ## Setup
 
 Add this to your build.gradle:

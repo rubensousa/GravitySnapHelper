@@ -1,0 +1,22 @@
+[versions]
+agp = "8.13.2"
+kotlin = "2.2.0"
+truth = "1.4.5"
+junit = "4.13.2"
+recyclerview = "1.4.0"
+appcompat = "1.7.1"
+material = "1.13.0"
+
+[libraries]
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+androidx-material = { module = "com.google.android.material:material", version.ref = "material" }
+androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
+truth = { module = "com.google.truth:truth", version.ref = "truth" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+maven-publish = { id = "com.vanniktech.maven.publish", version = "0.36.0" }
+android-library = { id = "com.android.library", version.ref = "agp" }

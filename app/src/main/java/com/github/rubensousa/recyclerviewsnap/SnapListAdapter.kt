@@ -1,4 +1,4 @@
-package com.github.rubensousa.recyclerviewsnap.adapter
+package com.github.rubensousa.recyclerviewsnap
 
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,8 +10,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.rubensousa.gravitysnaphelper.GravitySnapHelper
 import com.github.rubensousa.gravitysnaphelper.GravitySnapRecyclerView
-import com.github.rubensousa.recyclerviewsnap.R
-import com.github.rubensousa.recyclerviewsnap.model.SnapList
 
 class SnapListAdapter : RecyclerView.Adapter<SnapListAdapter.VH>() {
 

@@ -1,7 +1,6 @@
-package com.github.rubensousa.recyclerviewsnap.model
+package com.github.rubensousa.recyclerviewsnap
 
 import com.github.rubensousa.gravitysnaphelper.GravitySnapHelper
-import com.github.rubensousa.recyclerviewsnap.R
 
 data class SnapList(
     val gravity: Int,

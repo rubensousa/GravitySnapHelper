@@ -1,4 +1,4 @@
-package com.github.rubensousa.recyclerviewsnap.adapter
+package com.github.rubensousa.recyclerviewsnap
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,8 +6,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.github.rubensousa.recyclerviewsnap.R
-import com.github.rubensousa.recyclerviewsnap.model.App
 
 class AppAdapter(private val layoutId: Int = R.layout.adapter) :
     RecyclerView.Adapter<AppAdapter.VH>() {

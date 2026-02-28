@@ -1,4 +1,4 @@
-package com.github.rubensousa.recyclerviewsnap.adapter
+package com.github.rubensousa.recyclerviewsnap
 
 import android.graphics.Rect
 import android.view.View
@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
  * If the orientation passed is [RecyclerView.VERTICAL], top startPadding is set at position 0
  * and bottom endPadding is set at the last position.
  */
-class LinearEdgeDecoration(
+data class LinearEdgeDecoration(
     @Px private val startPadding: Int,
     @Px private val endPadding: Int = startPadding,
     private val orientation: Int = RecyclerView.VERTICAL,

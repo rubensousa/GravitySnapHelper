@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.3.0
+
+- Updated minSdk to 21
+- Updated RecyclerView to 1.4.0
+- Deleted deprecated `GravityPagerSnapHelper`. Use the following to replicate the behavior:
+
+```kotlin
+gravitySnapHelper.apply {
+    setMaxFlingSizeFraction(1.0f)
+    setScrollMsPerInch(50f) 
+}
+```
+
 ## 2.2.2
 
 - Fixed IllegalArgumentException being incorrectly thrown in `GravitySnapRecyclerView` when Gravity.CENTER is used.

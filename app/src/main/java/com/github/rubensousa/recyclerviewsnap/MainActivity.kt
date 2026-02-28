@@ -8,10 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.rubensousa.gravitysnaphelper.GravitySnapRecyclerView
-import com.github.rubensousa.recyclerviewsnap.adapter.AppAdapter
-import com.github.rubensousa.recyclerviewsnap.adapter.SnapListAdapter
-import com.github.rubensousa.recyclerviewsnap.model.App
-import com.github.rubensousa.recyclerviewsnap.model.SnapList
 import java.util.*
 
 class MainActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListener {

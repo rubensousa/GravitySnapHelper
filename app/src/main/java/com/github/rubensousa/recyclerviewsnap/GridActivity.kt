@@ -1,13 +1,9 @@
 package com.github.rubensousa.recyclerviewsnap
 
 import android.os.Bundle
-import android.view.Gravity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.github.rubensousa.gravitysnaphelper.GravitySnapHelper
-import com.github.rubensousa.recyclerviewsnap.adapter.AppAdapter
-import com.github.rubensousa.recyclerviewsnap.model.App
 
 
 class GridActivity : AppCompatActivity() {

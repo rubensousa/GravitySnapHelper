@@ -4,10 +4,8 @@ A SnapHelper that snaps a RecyclerView to an edge.
 
 ## Setup
 
-Add this to your build.gradle:
-
-```groovy
-implementation 'com.github.rubensousa:gravitysnaphelper:2.2.2'
+```kotlin
+implementation("com.github.rubensousa:gravitysnaphelper:2.3.0")
 ```
 
 ## How to use
